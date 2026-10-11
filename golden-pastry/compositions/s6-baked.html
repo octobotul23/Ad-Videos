@@ -49,7 +49,7 @@
 
           // ---- 15: no oven? — the oven vanishes in a puff ----
           const ov = GP.oven(world, 440, { css: "left:320px;top:800px;" });
-          tl.fromTo(ov.eyes, { scale: 1 }, { scale: 1.5, duration: 0.18, ease: "back.out(3)" }, l15.t - 0.05);
+          tl.fromTo(ov.eyes, { scale: 1 }, { scale: 1.45, duration: 0.18, ease: "back.out(3)", transformOrigin: "50% 50%" }, l15.t - 0.05);
           tl.fromTo(ov.el, { scale: 1, rotation: 0 }, { scale: 0, rotation: 30, duration: 0.25, ease: "back.in(2)" }, l15.t + 0.35);
           const puffs = [];
           const rp = GP.seeded(61);
@@ -86,19 +86,18 @@
           const tongues = [["M0 -340 C70 -240 140 -170 120 -80 C105 -20 60 10 0 10 C-60 10 -105 -20 -120 -80 C-140 -170 -70 -240 0 -340 Z", "#C9561B"],
             ["M0 -260 C50 -190 100 -140 86 -70 C76 -26 44 0 0 0 C-44 0 -76 -26 -86 -70 C-100 -140 -50 -190 0 -260 Z", "#F2A63B"],
             ["M0 -170 C30 -130 60 -96 52 -52 C46 -20 26 -4 0 -4 C-26 -4 -46 -20 -52 -52 C-60 -96 -30 -130 0 -170 Z", "#FFE39A"]];
-          const tps = tongues.map((t) => { const p = GP.svg("path", { d: t[0], fill: t[1] }, fl); p.style.transformOrigin = "0px 0px"; return p; });
-          // flame eyes: it's a friendly little flame
-          [[-26, -70], [26, -70]].forEach((e) => { GP.svg("ellipse", { cx: e[0], cy: e[1], rx: 9, ry: 12, fill: "#2B1D13" }, fl); });
-          GP.svg("path", { d: "M-18 -40 Q0 -26 18 -40", stroke: "#2B1D13", "stroke-width": 6, fill: "none", "stroke-linecap": "round" }, fl);
+          const tps = tongues.map((t, i) => GP.svg("path", { d: t[0], fill: t[1], stroke: i === 0 ? GP.INK : "none", "stroke-width": 8, "stroke-linejoin": "round" }, fl));
+          // a friendly little flame with the croissant's face
+          GP.face(fl, 0, -78, 0.24, { mood: "happy" });
           tl.fromTo(fl, { scale: 0, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.4, ease: "back.out(2.4)" }, tB + 0.38);
           const flick = Math.max(0, Math.floor((END - tB - 0.5) / 0.16) - 1);
-          tl.fromTo(tps[0], { scaleY: 1, skewX: -4 }, { scaleY: 1.12, skewX: 5, duration: 0.16, ease: "sine.inOut", yoyo: true, repeat: flick, immediateRender: false }, tB + 0.4);
-          tl.fromTo(tps[1], { scaleY: 1.06, skewX: 4 }, { scaleY: 0.94, skewX: -5, duration: 0.13, ease: "sine.inOut", yoyo: true, repeat: flick + 2, immediateRender: false }, tB + 0.42);
-          tl.fromTo(tps[2], { scaleY: 0.95 }, { scaleY: 1.12, duration: 0.11, ease: "sine.inOut", yoyo: true, repeat: flick + 4, immediateRender: false }, tB + 0.44);
+          tl.fromTo(tps[0], { scaleY: 1, skewX: -4 }, { scaleY: 1.12, skewX: 5, transformOrigin: "50% 100%", duration: 0.16, ease: "sine.inOut", yoyo: true, repeat: flick, immediateRender: false }, tB + 0.4);
+          tl.fromTo(tps[1], { scaleY: 1.06, skewX: 4 }, { scaleY: 0.94, skewX: -5, transformOrigin: "50% 100%", duration: 0.13, ease: "sine.inOut", yoyo: true, repeat: flick + 2, immediateRender: false }, tB + 0.42);
+          tl.fromTo(tps[2], { scaleY: 0.95 }, { scaleY: 1.12, transformOrigin: "50% 100%", duration: 0.11, ease: "sine.inOut", yoyo: true, repeat: flick + 4, immediateRender: false }, tB + 0.44);
           // rising embers
           GP.burst(tl, fxl, 540, 1440, tB + 0.3, { n: 26, seed: 71, speed: 760, spread: 1.1, colors: ["#FFE39A", "#F2A63B", "#E9814E"], round: true, size: 14, gravity: -260, dur: 2.2 });
           // golden croissant pops up above the flame, steam curls off it
-          const cr = GP.croissant(world, 360, { css: "left:360px;top:840px;" });
+          const cr = GP.croissant(world, 380, { css: "left:350px;top:860px;" });
           tl.fromTo(cr.el, { y: 500, scale: 0.4, opacity: 0 }, { y: 0, scale: 1, opacity: 1, duration: 0.5, ease: "back.out(1.8)" }, tB + 0.35);
           tl.fromTo(cr.el, { rotation: -4 }, { rotation: 4, duration: 0.35, yoyo: true, repeat: 5, ease: "sine.inOut", immediateRender: false }, tB + 0.85);
           GP.steam(tl, world, 540, 880, tB + 0.7, { w: 260 });

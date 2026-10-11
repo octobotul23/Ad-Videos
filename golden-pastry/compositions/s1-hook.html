@@ -62,7 +62,7 @@
           GP.svg("rect", { x: -11, y: -232, width: 22, height: 255, rx: 11, fill: "#4A3627" }, minH);
           GP.svg("rect", { x: -4, y: -246, width: 8, height: 280, rx: 4, fill: "#C9561B" }, secH);
           GP.svg("circle", { cx: 0, cy: 0, r: 22, fill: "#F2A63B", stroke: "#C4741A", "stroke-width": 6 }, cs);
-          [hourH, minH, secH].forEach((h) => h.style.transformOrigin = "0px 0px");
+          gsap.set([hourH, minH, secH], { svgOrigin: "0 0" });
           tl.fromTo(ck, { scale: 0.3, opacity: 0, rotation: -25 }, { scale: 1, opacity: 1, rotation: 0, duration: 0.6, ease: "back.out(1.8)" }, 0.0);
           tl.fromTo(hourH, { rotation: 207 }, { rotation: 210, duration: l1.t, ease: "none" }, 0);
           tl.fromTo(minH, { rotation: 336 }, { rotation: 354, duration: l1.t - 0.08, ease: "none" }, 0);
@@ -118,7 +118,7 @@
           const glare = GP.mk("div", "", cse, "position:absolute;left:60px;top:40px;width:120px;height:620px;transform:skewX(-14deg);background:linear-gradient(90deg,rgba(255,255,255,0),rgba(255,255,255,.75),rgba(255,255,255,0));");
           tl.fromTo(cse, { x: 1150 }, { x: 0, duration: 0.5, ease: "power3.out" }, l3.t - 0.12);
           tl.fromTo(glare, { x: -200, opacity: 0 }, { x: 640, opacity: 1, duration: 0.8, ease: "power2.inOut", immediateRender: false }, l3.t + 0.4);
-          const cr = GP.croissant(cse, 300, { css: "left:560px;top:512px;" });
+          const cr = GP.croissant(cse, 300, { css: "left:560px;top:484px;" });
           tl.fromTo(cr.el, { scale: 0, y: 30 }, { scale: 1, y: 0, duration: 0.4, ease: "back.out(2.6)", immediateRender: false }, l3.t + 0.55);
           const c3 = $("#s1-cap3"); c3.innerHTML = GP.t("l03");
           const w3 = GP.split(c3);
@@ -138,7 +138,7 @@
           tl.to(cr.pupils, { x: 0, y: 4, duration: 0.2, ease: "power2.inOut" }, l4.t + 0.95);
           tl.fromTo(cr.smile, { opacity: 1 }, { opacity: 0, duration: 0.1, immediateRender: false }, l4.t + 0.3);
           tl.fromTo(cr.frown, { opacity: 0 }, { opacity: 1, duration: 0.1, immediateRender: false }, l4.t + 0.3);
-          const sw = GP.mk("div", "", cse, "left:830px;top:520px;");
+          const sw = GP.mk("div", "", cse, "left:800px;top:470px;");
           sw.id = "s1-sweat";
           tl.fromTo(sw, { opacity: 0, y: -10 }, { opacity: 1, y: 30, duration: 0.5, ease: "power1.in", immediateRender: false }, l4.t + 0.5);
           tl.to(sw, { opacity: 0, duration: 0.15 }, l4.t + 1.0);

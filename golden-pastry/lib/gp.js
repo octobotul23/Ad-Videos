@@ -232,46 +232,52 @@
       ";box-shadow:0 " + size * 0.08 + "px " + size * 0.22 + "px rgba(74,54,39,.22), inset -" + size * 0.06 + "px -" + size * 0.08 + "px " + size * 0.16 + "px rgba(0,0,0,.12);" + (css || ""));
   };
 
-  // A clay croissant character (SVG) with eyes and a mouth. Returns parts for animation.
-  // Drawn in a 400x260 box, centred on its own origin via the wrapper.
-  let uid = 0;
+  // The croissant character: the user's drawing (assets/characters/croissant*.png, face removed)
+  // with the same kawaii face redrawn on top so it can blink, look around and change mood.
+  // Image space is 1308x736; the face sits where the drawing had it.
+  GP.INK = "#3A1A08";
   GP.croissant = function (parent, w, o) {
     o = o || {};
-    uid++;
-    const id = "gpc" + uid + (o.id || "");
-    const wrap = GP.mk("div", "gp-croissant", parent, "position:absolute;width:" + w + "px;height:" + w * 0.65 + "px;" + (o.css || ""));
-    const s = GP.svg("svg", { viewBox: "0 0 400 260", width: "100%", height: "100%" }, wrap);
-    s.style.overflow = "visible";
-    const defs = GP.svg("defs", {}, s);
-    const gr = GP.svg("radialGradient", { id: id + "g", cx: "40%", cy: "30%", r: "75%" }, defs);
-    const stops = o.frozen ? [["0%", "#ffffff"], ["35%", "#d9f0ff"], ["75%", "#8fc9ef"], ["100%", "#4f8fc4"]]
-      : [["0%", "#ffe9b8"], ["30%", "#F7C46B"], ["65%", "#E08B22"], ["100%", "#9A3610"]];
-    stops.forEach(function (st) { GP.svg("stop", { offset: st[0], "stop-color": st[1] }, gr); });
-    GP.svg("ellipse", { cx: 200, cy: 236, rx: 150, ry: 16, fill: "rgba(43,29,19,.18)" }, s);
-    const body = GP.svg("g", {}, s);
-    // lobes: ends small, middle big
-    const lobes = [[62, 168, 40, 30, -38], [108, 128, 52, 44, -24], [200, 108, 76, 70, 0], [292, 128, 52, 44, 24], [338, 168, 40, 30, 38]];
-    lobes.forEach(function (l, i) {
-      GP.svg("ellipse", { cx: l[0], cy: l[1], rx: l[2], ry: l[3], transform: "rotate(" + l[4] + " " + l[0] + " " + l[1] + ")", fill: "url(#" + id + "g)",
-        stroke: o.frozen ? "#4f8fc4" : "#9A3610", "stroke-width": 3 }, body);
-      if (i > 0 && i < 4) GP.svg("path", { d: "M" + (l[0] - l[2] * 0.5) + " " + (l[1] - l[3] * 0.6) + " Q" + l[0] + " " + (l[1] - l[3] * 0.95) + " " + (l[0] + l[2] * 0.5) + " " + (l[1] - l[3] * 0.6),
-        stroke: "rgba(255,255,255,.55)", "stroke-width": 6, fill: "none", "stroke-linecap": "round" }, body);
+    const wrap = GP.mk("div", "gp-croissant", parent, "position:absolute;width:" + w + "px;height:" + Math.round(w * 736 / 1308) + "px;" + (o.css || ""));
+    GP.mk("div", "", wrap, "position:absolute;left:12%;right:12%;bottom:-3%;height:9%;border-radius:50%;background:rgba(43,29,19,.2);");
+    const body = GP.mk("img", "", wrap, "position:absolute;left:0;top:0;width:100%;height:100%;display:block;");
+    body.src = o.frozen ? "assets/characters/croissant-frozen.png" : "assets/characters/croissant.png";
+    const s = GP.svg("svg", { viewBox: "0 0 1308 736", width: "100%", height: "100%" }, wrap);
+    s.style.cssText = "position:absolute;left:0;top:0;overflow:visible";
+    const f = GP.face(s, 505, 420, 1, { ink: o.frozen ? "#13305A" : GP.INK, blush: o.frozen ? "rgba(240,140,150,.45)" : "#F58C7A", mood: o.mood || "happy", eyeGap: 122, eyeRx: 49, eyeRy: 58, mouthY: 46, mouthW: 46, blushY: 72, blushGap: 180, blushRx: 34, blushRy: 29, stroke: 13 });
+    return { el: wrap, svg: s, body: body, face: f.g, eyes: f.eyes, pupils: f.pupils, smile: f.smile, frown: f.frown, cheeks: f.cheeks };
+  };
+
+  // Kawaii face (the croissant's style): solid dark oval eyes with a white glint, a small "u" mouth, pink blush.
+  // Draws into an SVG at (cx, cy) = point between the eyes. Moods: happy, sad, flat, sick, wow, joy.
+  GP.face = function (svg, cx, cy, k, o) {
+    o = o || {};
+    k = k || 1;
+    const ink = o.ink || GP.INK, g = GP.svg("g", { transform: "translate(" + cx + " " + cy + ") scale(" + k + ")" }, svg);
+    const gap = o.eyeGap || 122, rx = o.eyeRx || 49, ry = o.eyeRy || 58, st = o.stroke || 13;
+    const mood = o.mood || "happy";
+    const cheeks = [-1, 1].map(function (sd) {
+      return GP.svg("ellipse", { cx: sd * (o.blushGap || 180), cy: o.blushY || 72, rx: o.blushRx || 34, ry: o.blushRy || 29, fill: o.blush || "#F58C7A", opacity: mood === "sick" ? 1 : 0.9 }, g);
     });
-    const face = GP.svg("g", {}, s);
-    const eyes = [], pupils = [];
-    [[172, 104], [228, 104]].forEach(function (p) {
-      const eg = GP.svg("g", { transform: "translate(" + p[0] + " " + p[1] + ")" }, face);
-      const ew = GP.svg("ellipse", { cx: 0, cy: 0, rx: 15, ry: 19, fill: "#fff" }, eg);
+    const eyes = [], pupils = [], closed = [];
+    [-1, 1].forEach(function (sd) {
+      const eg = GP.svg("g", { transform: "translate(" + sd * gap + " 0)" }, g);
       const pu = GP.svg("g", {}, eg);
-      GP.svg("circle", { cx: 0, cy: 3, r: 9, fill: "#2B1D13" }, pu);
-      GP.svg("circle", { cx: 3, cy: -1, r: 3, fill: "#fff" }, pu);
-      eyes.push(eg); pupils.push(pu);
+      GP.svg("ellipse", { cx: 0, cy: 0, rx: rx, ry: ry, fill: ink }, pu);
+      GP.svg("circle", { cx: rx * 0.3, cy: -ry * 0.3, r: rx * 0.27, fill: "#ffffff" }, pu);
+      if (mood === "joy") GP.svg("circle", { cx: -rx * 0.28, cy: ry * 0.3, r: rx * 0.13, fill: "#ffffff" }, pu);
+      // closed / droopy eye (sick, sleepy)
+      const c = GP.svg("path", { d: "M" + (-rx) + " 6 Q0 " + (ry * 0.75) + " " + rx + " 6", stroke: ink, "stroke-width": st, fill: "none", "stroke-linecap": "round", opacity: 0 }, eg);
+      if (mood === "sick") { pu.setAttribute("opacity", "0"); c.setAttribute("opacity", "1"); }
+      eyes.push(eg); pupils.push(pu); closed.push(c);
     });
-    const cheeks = [GP.svg("ellipse", { cx: 150, cy: 132, rx: 13, ry: 8, fill: "rgba(217,67,59,.35)" }, face),
-      GP.svg("ellipse", { cx: 250, cy: 132, rx: 13, ry: 8, fill: "rgba(217,67,59,.35)" }, face)];
-    const smile = GP.svg("path", { d: "M184 134 Q200 150 216 134", stroke: "#2B1D13", "stroke-width": 6, fill: "none", "stroke-linecap": "round" }, face);
-    const frown = GP.svg("path", { d: "M186 144 Q200 132 214 144", stroke: "#2B1D13", "stroke-width": 6, fill: "none", "stroke-linecap": "round", opacity: 0 }, face);
-    return { el: wrap, svg: s, body: body, face: face, eyes: eyes, pupils: pupils, smile: smile, frown: frown, cheeks: cheeks };
+    const mw = o.mouthW || 46, my = o.mouthY || 46;
+    const smile = GP.svg("path", { d: "M" + (-mw) + " " + (my - 12) + " Q0 " + (my + 40) + " " + mw + " " + (my - 12), stroke: ink, "stroke-width": st, fill: "none", "stroke-linecap": "round", opacity: mood === "happy" || mood === "joy" ? 1 : 0 }, g);
+    const frown = GP.svg("path", { d: "M" + (-mw * 0.85) + " " + (my + 22) + " Q0 " + (my - 20) + " " + mw * 0.85 + " " + (my + 22), stroke: ink, "stroke-width": st, fill: "none", "stroke-linecap": "round", opacity: mood === "sad" || mood === "sick" ? 1 : 0 }, g);
+    const flat = GP.svg("path", { d: "M" + (-mw * 0.7) + " " + (my + 6) + " L" + mw * 0.7 + " " + (my + 6), stroke: ink, "stroke-width": st, fill: "none", "stroke-linecap": "round", opacity: mood === "flat" ? 1 : 0 }, g);
+    const wow = GP.svg("ellipse", { cx: 0, cy: my + 8, rx: mw * 0.45, ry: mw * 0.55, fill: ink, opacity: mood === "wow" ? 1 : 0 }, g);
+    if (mood === "joy") { smile.setAttribute("fill", ink); smile.setAttribute("d", "M" + (-mw) + " " + (my - 14) + " Q0 " + (my + 56) + " " + mw + " " + (my - 14) + " Z"); }
+    return { g: g, eyes: eyes, pupils: pupils, closed: closed, smile: smile, frown: frown, flat: flat, wow: wow, cheeks: cheeks };
   };
 
   // A round clay "blob" person (customer / dough) with eyes.
@@ -361,18 +367,17 @@
     const el = GP.mk("div", "gp-oven", parent, "position:absolute;width:" + w + "px;height:" + h + "px;" + (o.css || ""));
     GP.mk("div", "", el, "position:absolute;left:" + w * 0.12 + "px;bottom:-" + w * 0.035 + "px;width:" + w * 0.14 + "px;height:" + w * 0.07 + "px;border-radius:50%;background:#1B120B;");
     GP.mk("div", "", el, "position:absolute;right:" + w * 0.12 + "px;bottom:-" + w * 0.035 + "px;width:" + w * 0.14 + "px;height:" + w * 0.07 + "px;border-radius:50%;background:#1B120B;");
-    GP.mk("div", "", el, "position:absolute;inset:0;border-radius:" + w * 0.12 + "px;background:linear-gradient(160deg,#6A5442,#4A3627 55%,#2B1D13);box-shadow:0 " + w * 0.07 + "px " + w * 0.14 + "px rgba(43,29,19,.4), inset 0 " + w * 0.02 + "px 0 rgba(255,255,255,.18);");
-    // control panel: two knob eyes
-    const eyes = [];
-    [0.3, 0.7].forEach(function (fx) {
-      const k = GP.mk("div", "", el, "position:absolute;left:" + (w * fx - w * 0.075) + "px;top:" + w * 0.06 + "px;width:" + w * 0.15 + "px;height:" + w * 0.15 + "px;border-radius:50%;background:#FFFBF3;box-shadow:0 0 0 " + w * 0.018 + "px #F2A63B;");
-      eyes.push(GP.mk("div", "", k, "position:absolute;left:30%;top:34%;width:40%;height:40%;border-radius:50%;background:#2B1D13;"));
-    });
-    GP.mk("div", "", el, "position:absolute;left:" + w * 0.2 + "px;right:" + w * 0.2 + "px;top:" + w * 0.255 + "px;height:" + w * 0.035 + "px;border-radius:" + w * 0.02 + "px;background:#F2A63B;");
-    const win = GP.mk("div", "", el, "position:absolute;left:" + w * 0.13 + "px;right:" + w * 0.13 + "px;top:" + w * 0.33 + "px;bottom:" + w * 0.1 + "px;border-radius:" + w * 0.07 + "px;background:#1B120B;overflow:hidden;box-shadow:inset 0 0 0 " + w * 0.02 + "px #2B1D13;");
+    GP.mk("div", "", el, "position:absolute;inset:0;border-radius:" + w * 0.12 + "px;background:linear-gradient(160deg,#F7C46B,#E08B22 60%,#C4741A);border:" + w * 0.016 + "px solid " + GP.INK + ";box-shadow:0 " + w * 0.07 + "px " + w * 0.14 + "px rgba(43,29,19,.35), inset 0 " + w * 0.025 + "px 0 rgba(255,255,255,.35);");
+    // control panel: a kawaii face, same style as the croissant
+    const fs = GP.svg("svg", { viewBox: "0 0 1000 300", width: w, height: w * 0.3 }, el);
+    fs.style.cssText = "position:absolute;left:0;top:0;overflow:visible";
+    const face = GP.face(fs, 500, 112, 0.95, { mood: o.mood || "happy", ink: "#1B0D04", blush: "#F58C7A" });
+    const eyes = face.pupils;
+    GP.mk("div", "", el, "position:absolute;left:" + w * 0.2 + "px;right:" + w * 0.2 + "px;top:" + w * 0.262 + "px;height:" + w * 0.03 + "px;border-radius:" + w * 0.02 + "px;background:" + GP.INK + ";opacity:.85;");
+    const win = GP.mk("div", "", el, "position:absolute;left:" + w * 0.13 + "px;right:" + w * 0.13 + "px;top:" + w * 0.33 + "px;bottom:" + w * 0.1 + "px;border-radius:" + w * 0.07 + "px;background:#2B1D13;overflow:hidden;border:" + w * 0.014 + "px solid " + GP.INK + ";");
     const glow = GP.mk("div", "", win, "position:absolute;inset:0;background:radial-gradient(circle at 50% 80%,#FFE39A 0%,#F2A63B 35%,#C9561B 70%,#7E2A0C 100%);opacity:0;");
     GP.mk("div", "", win, "position:absolute;left:8%;top:10%;width:22%;height:70%;transform:skewX(-14deg);background:linear-gradient(90deg,rgba(255,255,255,0),rgba(255,255,255,.22),rgba(255,255,255,0));");
-    return { el: el, eyes: eyes, win: win, glow: glow, w: w, h: h };
+    return { el: el, eyes: eyes, face: face, win: win, glow: glow, w: w, h: h };
   };
 
   GP.toggle = function (parent, o) {
@@ -430,5 +435,63 @@
       wheels.push(r);
     });
     return { el: el, wheels: wheels };
+  };
+})();
+
+// Kawaii people and dough, drawn in the croissant's style: thick ink outline, flat warm fills, the same face.
+(function () {
+  const GP = window.GP;
+  const SKIN = ["#FFE2C6", "#F7CBA4", "#E8AE82", "#C98C62"];
+  const HAIR = { cocoa: "#4A2A16", crust: "#B34A16", honey: "#E0A040", ink: "#2B1408", cream: "#F3E3C8" };
+  GP.person = function (parent, size, o) {
+    o = o || {};
+    const ink = GP.INK, sw = 6;
+    const el = GP.mk("div", "gp-person", parent, "position:absolute;width:" + size + "px;height:" + size * 1.15 + "px;" + (o.css || ""));
+    const s = GP.svg("svg", { viewBox: "0 0 200 230", width: "100%", height: "100%" }, el);
+    s.style.overflow = "visible";
+    const skin = o.skin || SKIN[0], hair = HAIR[o.hairColor || "cocoa"] || o.hairColor, shirt = o.shirt || "#F2A63B";
+    GP.svg("path", { d: "M28 232 Q28 160 100 160 Q172 160 172 232 Z", fill: shirt, stroke: ink, "stroke-width": sw, "stroke-linejoin": "round" }, s);
+    GP.svg("path", { d: "M82 160 Q100 180 118 160", stroke: ink, "stroke-width": sw, fill: "none", "stroke-linecap": "round" }, s);
+    const st = { stroke: ink, "stroke-width": sw, "stroke-linejoin": "round", fill: hair };
+    const kind = o.hair || "tuft";
+    if (kind === "bun") GP.svg("circle", Object.assign({ cx: 100, cy: 30, r: 24 }, st), s);
+    if (kind === "pony") GP.svg("path", Object.assign({ d: "M160 80 Q196 96 186 150 Q170 128 156 112 Z" }, st), s);
+    GP.svg("circle", { cx: 100, cy: 100, r: 72, fill: skin, stroke: ink, "stroke-width": sw }, s);
+    if (kind === "tuft") GP.svg("path", Object.assign({ d: "M80 34 Q86 10 104 18 Q100 2 122 8 Q112 20 118 34 Q100 26 80 34 Z" }, st), s);
+    if (kind === "bob" || kind === "bun" || kind === "pony")
+      GP.svg("path", Object.assign({ d: "M30 104 Q26 28 100 28 Q174 28 170 104 Q156 66 112 62 Q118 74 108 80 Q100 62 70 66 Q44 74 30 104 Z" }, st), s);
+    if (kind === "cap") {
+      GP.svg("path", Object.assign({ d: "M32 86 Q34 26 100 26 Q166 26 168 86 Z", fill: o.capColor || "#C9561B" }, st, { fill: o.capColor || "#C9561B" }), s);
+      GP.svg("path", { d: "M100 86 L196 86 Q196 100 170 100 L100 100 Z", fill: o.capColor || "#C9561B", stroke: ink, "stroke-width": sw, "stroke-linejoin": "round" }, s);
+    }
+    if (kind === "beanie") {
+      GP.svg("path", { d: "M30 92 Q30 22 100 22 Q170 22 170 92 Z", fill: o.capColor || "#3E8FD1", stroke: ink, "stroke-width": sw, "stroke-linejoin": "round" }, s);
+      GP.svg("rect", { x: 26, y: 78, width: 148, height: 24, rx: 12, fill: o.capColor || "#3E8FD1", stroke: ink, "stroke-width": sw }, s);
+      GP.svg("circle", { cx: 100, cy: 18, r: 14, fill: "#FFFBF3", stroke: ink, "stroke-width": sw }, s);
+    }
+    if (kind === "chef") {
+      const hat = { fill: "#FFFFFF", stroke: ink, "stroke-width": sw };
+      GP.svg("circle", Object.assign({ cx: 62, cy: 40, r: 30 }, hat), s);
+      GP.svg("circle", Object.assign({ cx: 138, cy: 40, r: 30 }, hat), s);
+      GP.svg("circle", Object.assign({ cx: 100, cy: 22, r: 36 }, hat), s);
+      GP.svg("rect", { x: 46, y: 46, width: 108, height: 36, rx: 10, fill: "#FFFFFF", stroke: ink, "stroke-width": sw }, s);
+    }
+    const f = GP.face(s, 100, 112, 0.3, { mood: o.mood || "happy", ink: ink });
+    return { el: el, svg: s, face: f };
+  };
+
+  GP.dough = function (parent, size, o) {
+    o = o || {};
+    const ink = GP.INK;
+    const el = GP.mk("div", "gp-dough", parent, "position:absolute;width:" + size + "px;height:" + size * 0.85 + "px;" + (o.css || ""));
+    const s = GP.svg("svg", { viewBox: "0 0 200 170", width: "100%", height: "100%" }, el);
+    s.style.overflow = "visible";
+    const gr = GP.svg("linearGradient", { id: "gpdough" + (o.id || ""), x1: 0, y1: 0, x2: 0, y2: 1 }, GP.svg("defs", {}, s));
+    GP.svg("stop", { offset: "0", "stop-color": "#FFF8EA" }, gr);
+    GP.svg("stop", { offset: "1", "stop-color": "#F1D9B0" }, gr);
+    GP.svg("path", { d: "M12 154 C6 70 48 18 100 18 C152 18 194 70 188 154 Q100 170 12 154 Z", fill: "url(#gpdough" + (o.id || "") + ")", stroke: ink, "stroke-width": 6, "stroke-linejoin": "round" }, s);
+    GP.svg("path", { d: "M52 52 Q70 32 96 30", stroke: "#ffffff", "stroke-width": 9, fill: "none", "stroke-linecap": "round", opacity: 0.8 }, s);
+    const f = GP.face(s, 100, 96, 0.3, { mood: o.mood || "happy" });
+    return { el: el, svg: s, face: f };
   };
 })();

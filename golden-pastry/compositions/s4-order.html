@@ -52,6 +52,13 @@
           GP.tap(tl, ph.el, 280, 900, l10.t + 0.5);
           GP.tap(tl, ph.el, 280, 900, l10.t + 1.3);
 
+          const chip = GP.mk("div", "", $("#s4-phonebox"), "position:absolute;left:50%;top:455px;padding:12px 34px 12px 30px;border-radius:44px;background:#FFFBF3;border:4px solid #F2A63B;box-shadow:0 8px 18px rgba(43,29,19,.18);font-weight:800;font-size:44px;color:#2B1D13;white-space:nowrap;display:flex;align-items:center;gap:14px;");
+          const lock = GP.svg("svg", { viewBox: "0 0 24 28", width: 30, height: 34 }, chip);
+          GP.svg("path", { d: "M6 12 V8 a6 6 0 0 1 12 0 V12", stroke: "#3E9B5B", "stroke-width": 3.5, fill: "none" }, lock);
+          GP.svg("rect", { x: 3, y: 12, width: 18, height: 14, rx: 3, fill: "#3E9B5B" }, lock);
+          GP.mk("span", "", chip, "", GP.t("url"));
+          tl.fromTo(chip, { xPercent: -50, scale: 0, opacity: 0 }, { xPercent: -50, scale: 1, opacity: 1, duration: 0.4, ease: "back.out(2.4)" }, 0.45);
+          tl.to(chip, { y: -40, opacity: 0, duration: 0.25, ease: "power2.in" }, l11.t + l11.d + 0.2);
           const c1 = $("#s4-cap1"); c1.innerHTML = GP.t("l10");
           const w1 = GP.split(c1);
           GP.wordsIn(tl, w1, l10.t, { stagger: 0.06 });

@@ -27,7 +27,7 @@
           box-shadow: 0 12px 0 #9A3610, 0 24px 40px rgba(0,0,0,.4); display: flex; align-items: center; justify-content: center; overflow: hidden;
           font-weight: 800; font-size: 54px; color: #2B1D13; letter-spacing: -0.01em; white-space: nowrap; }
         #s10-shine { position: absolute; top: -20px; left: -200px; width: 140px; height: 180px; transform: skewX(-20deg); background: linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,.75), rgba(255,255,255,0)); }
-        #s10-url { position: absolute; left: 0; right: 0; top: 1735px; text-align: center; font-weight: 800; font-size: 50px; color: #FBE7CE; letter-spacing: .02em; }
+        #s10-url { position: absolute; left: 0; right: 0; top: 1728px; text-align: center; font-weight: 800; font-size: 62px; color: #FBE7CE; letter-spacing: .02em; }
         #s10-cursor { position: absolute; left: 0; top: 0; width: 90px; height: 110px; }
       </style>
       <div id="root" data-composition-id="s10-end" data-width="1080" data-height="1920">
@@ -65,14 +65,23 @@
           for (let i = 0; i < 8; i++) {
             const pg = GP.svg("g", { transform: "rotate(" + i * 45 + ")" }, mark);
             const p = GP.svg("path", { d: "M0 -26 C34 -78 34 -170 0 -232 C-34 -170 -34 -78 0 -26 Z", fill: "url(#s10gold)" }, pg);
-            p.style.transformOrigin = "0px -26px";
             petals.push(p);
           }
           const core = GP.svg("circle", { cx: 0, cy: 0, r: 17, fill: "url(#s10gold)" }, mark);
           [[0, -285], [285, 0], [0, 285], [-285, 0]].forEach((p) => dots.push(GP.svg("circle", { cx: p[0], cy: p[1], r: 13, fill: "url(#s10gold)" }, mark)));
           const at = Math.max(0.15, l25.t - 0.25);
-          tl.fromTo(petals, { scale: 0, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.4, ease: "back.out(2.2)", stagger: 0.05 }, at);
-          tl.fromTo(core, { scale: 0 }, { scale: 1, duration: 0.3, ease: "back.out(3)", transformOrigin: "0px 0px" }, at + 0.1);
+          // each petal grows out of its base (0,-26) — written as a transform attribute, seek-safe
+          const bloom = { t: 0 }, eb = gsap.parseEase("back.out(2.2)");
+          petals.forEach((pt) => { pt.setAttribute("transform", "translate(0 -26) scale(0.001) translate(0 26)"); pt.setAttribute("opacity", "0"); });
+          tl.to(bloom, { t: 1, duration: 0.4 + 7 * 0.05, ease: "none", onUpdate: function () {
+            const T = bloom.t * (0.4 + 7 * 0.05);
+            petals.forEach((pt, i) => {
+              const k = Math.max(0, Math.min(1, (T - i * 0.05) / 0.4)), sc = Math.max(0.001, eb(k));
+              pt.setAttribute("transform", "translate(0 -26) scale(" + sc + ") translate(0 26)");
+              pt.setAttribute("opacity", k > 0 ? "1" : "0");
+            });
+          } }, at);
+          tl.fromTo(core, { scale: 0 }, { scale: 1, duration: 0.3, ease: "back.out(3)", transformOrigin: "50% 50%" }, at + 0.1);
           tl.fromTo(rays, { attr: { y2: -175 } }, { attr: { y2: -262 }, duration: 0.35, ease: "power2.out", stagger: 0.03 }, at + 0.3);
           tl.fromTo(dots, { scale: 0 }, { scale: 1, duration: 0.25, ease: "back.out(3)", stagger: 0.05, transformOrigin: "50% 50%" }, at + 0.42);
           tl.fromTo(mark, { rotation: -60 }, { rotation: 0, duration: 0.9, ease: "power3.out" }, at);
@@ -93,7 +102,7 @@
           tl.fromTo("#s10-cta", { scale: 0.4, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.4, ease: "back.out(2)" }, l27.t - 0.05);
           tl.fromTo("#s10-shine", { x: 0 }, { x: 1300, duration: 0.7, ease: "power2.inOut" }, l27.t + 0.4);
           $("#s10-url").textContent = GP.t("url");
-          tl.fromTo("#s10-url", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.35, ease: "power2.out" }, l27.t + 0.3);
+          tl.fromTo("#s10-url", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.35, ease: "power2.out" }, l25.t + 0.5);
           // the cursor flies in and presses the button
           const tPress = l27.t + l27.d + 0.35;
           tl.fromTo("#s10-cursor", { x: 1150, y: 1950, rotation: 20 }, { x: 850, y: 1630, rotation: 0, duration: 0.55, ease: "power3.out" }, tPress - 0.6);

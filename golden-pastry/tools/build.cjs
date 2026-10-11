@@ -90,6 +90,7 @@ for (let i = 1; i < fx.length; i++) {
     fx[i].at += shift; fx[i].start += shift;
   }
 }
+fx.forEach((e) => { e.dur = Math.round(Math.min(e.dur, TOTAL - e.start) * 1000) / 1000; });
 const ends = [];
 fx.forEach((e) => {
   let k = ends.findIndex((x) => x <= e.start - 0.01);
