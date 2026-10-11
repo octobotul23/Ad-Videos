@@ -1,0 +1,104 @@
+<!doctype html>
+<html>
+  <head><meta charset="UTF-8" /></head>
+  <body>
+    <template>
+      <style>
+        @font-face { font-family: "Fraunces"; src: url("fonts/fraunces-latin.woff2") format("woff2"); font-weight: 400 700; unicode-range: U+0000-00FF, U+2000-206F, U+20AC, U+2122; }
+        @font-face { font-family: "Fraunces"; src: url("fonts/fraunces-latin-ext.woff2") format("woff2"); font-weight: 400 700; unicode-range: U+0100-024F, U+0259, U+1E00-1EFF; }
+        @font-face { font-family: "Nunito Sans"; src: url("fonts/nunito-sans-latin.woff2") format("woff2"); font-weight: 400 800; unicode-range: U+0000-00FF, U+2000-206F, U+20AC, U+2122; }
+        @font-face { font-family: "Nunito Sans"; src: url("fonts/nunito-sans-latin-ext.woff2") format("woff2"); font-weight: 400 800; unicode-range: U+0100-024F, U+0259, U+1E00-1EFF; }
+        #root { position: absolute; inset: 0; overflow: hidden; font-family: "Nunito Sans", sans-serif; }
+        .s3-bg { position: absolute; inset: 0; background: radial-gradient(circle at 50% 42%, #4A3627 0%, #2B1D13 55%, #1B120B 100%); }
+        .s3-stage { position: absolute; inset: 0; }
+        #s3-rays { position: absolute; left: -460px; top: -260px; width: 2000px; height: 2000px; border-radius: 50%;
+          background: repeating-conic-gradient(from 0deg, rgba(242,166,59,.13) 0deg 7deg, rgba(242,166,59,0) 7deg 22.5deg);
+          -webkit-mask-image: radial-gradient(circle, #000 0%, rgba(0,0,0,.6) 35%, transparent 62%); mask-image: radial-gradient(circle, #000 0%, rgba(0,0,0,.6) 35%, transparent 62%); opacity: 0; }
+        #s3-logo { position: absolute; left: 0; right: 0; top: 520px; height: 900px; }
+        #s3-mark { position: absolute; left: 240px; top: 0; width: 600px; height: 600px; overflow: visible; }
+        #s3-word { position: absolute; left: 140px; top: 650px; width: 800px; height: 197px; background: url(assets/brand/wordmark-gold.png) center/contain no-repeat; }
+        .s3-meet { position: absolute; left: 0; right: 0; top: 330px; text-align: center; color: #FBE7CE; font-weight: 800; font-size: 96px; letter-spacing: -0.01em; }
+        .s3-line { position: absolute; left: 0; right: 0; text-align: center; color: #FFFBF3; font-weight: 800; font-size: 150px; letter-spacing: -0.03em; line-height: 1; }
+        .s3-line .em { font-family: "Fraunces", serif; font-weight: 700; color: #F2A63B; }
+        #s3-flood, #s3-flash { position: absolute; left: 540px; top: 960px; width: 100px; height: 100px; margin: -50px 0 0 -50px; border-radius: 50%; }
+        #s3-flood { background: radial-gradient(circle, #FBE7CE 0%, #F7C46B 35%, #F2A63B 70%, #C4741A 100%); }
+        #s3-flash { background: #FFFBF3; opacity: 0; }
+      </style>
+      <div id="root" data-composition-id="s3-reveal" data-width="1080" data-height="1920">
+        <div id="s3-bg" class="clip s3-bg" data-start="0" data-duration="20" data-track-index="0"></div>
+        <div id="s3-stage" class="clip s3-stage" data-start="0" data-duration="20" data-track-index="1">
+          <div id="s3-rays"></div>
+          <div id="s3-logo"><svg id="s3-mark" viewBox="-300 -300 600 600"></svg><div id="s3-word"></div></div>
+          <div id="s3-meet" class="s3-meet"></div>
+          <div id="s3-l1" class="s3-line" style="top:1180px"></div>
+          <div id="s3-l2" class="s3-line" style="top:1370px"></div>
+          <div id="s3-fx"></div>
+          <div id="s3-flood"></div>
+          <div id="s3-flash"></div>
+        </div>
+      </div>
+      <script>
+        (function () {
+          const ID = "s3-reveal", C = GP.C, $ = (s) => document.querySelector(s);
+          const l8 = GP.line(ID, "08"), l9 = GP.line(ID, "09");
+          const END = GP.sceneDur(ID);
+          const tl = gsap.timeline({ paused: true });
+          const fxl = $("#s3-fx");
+
+          // gold flood out of the glowing point, then it drains to reveal the espresso stage
+          const flood = $("#s3-flood");
+          tl.fromTo(flood, { scale: 0.6, opacity: 1 }, { scale: 26, duration: 0.42, ease: "power3.in" }, 0);
+          tl.to(flood, { opacity: 0, duration: 0.35, ease: "power1.out" }, 0.45);
+          tl.fromTo("#s3-rays", { opacity: 0, rotation: 0 }, { opacity: 1, rotation: 40, duration: END, ease: "none" }, 0.3);
+
+          // ---- the flower mark, built petal by petal ----
+          const mark = $("#s3-mark");
+          const defs = GP.svg("defs", {}, mark);
+          const g = GP.svg("linearGradient", { id: "s3gold", x1: "0", y1: "0", x2: "1", y2: "1" }, defs);
+          [["0", "#F7DFA0"], [".45", "#E0B060"], [".75", "#C48E3E"], ["1", "#F2C877"]].forEach((s) => GP.svg("stop", { offset: s[0], "stop-color": s[1] }, g));
+          const rays = [], petals = [], dots = [];
+          for (let i = 0; i < 8; i++) {
+            const a = i * 45 + 22.5;
+            rays.push(GP.svg("line", { x1: 0, y1: -175, x2: 0, y2: -262, stroke: "url(#s3gold)", "stroke-width": 5, "stroke-linecap": "round", transform: "rotate(" + a + ")" }, mark));
+          }
+          for (let i = 0; i < 8; i++) {
+            const pg = GP.svg("g", { transform: "rotate(" + i * 45 + ")" }, mark);
+            const p = GP.svg("path", { d: "M0 -26 C34 -78 34 -170 0 -232 C-34 -170 -34 -78 0 -26 Z", fill: "url(#s3gold)" }, pg);
+            p.style.transformOrigin = "0px -26px";
+            petals.push(p);
+          }
+          const core = GP.svg("circle", { cx: 0, cy: 0, r: 17, fill: "url(#s3gold)" }, mark);
+          [[0, -285], [285, 0], [0, 285], [-285, 0]].forEach((p) => dots.push(GP.svg("circle", { cx: p[0], cy: p[1], r: 13, fill: "url(#s3gold)" }, mark)));
+
+          const at = l8.t + 0.05;
+          tl.fromTo(petals, { scale: 0, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.42, ease: "back.out(2.2)", stagger: 0.06 }, at);
+          tl.fromTo(core, { scale: 0 }, { scale: 1, duration: 0.3, ease: "back.out(3)", transformOrigin: "0px 0px" }, at + 0.1);
+          tl.fromTo(rays, { attr: { y2: -175 } }, { attr: { y2: -262 }, duration: 0.35, ease: "power2.out", stagger: 0.03 }, at + 0.3);
+          tl.fromTo(dots, { scale: 0 }, { scale: 1, duration: 0.25, ease: "back.out(3)", stagger: 0.05, transformOrigin: "50% 50%" }, at + 0.45);
+          tl.fromTo(mark, { rotation: -60 }, { rotation: 0, duration: 0.9, ease: "power3.out" }, at);
+          tl.fromTo("#s3-word", { clipPath: "inset(0 50% 0 50%)", opacity: 0 }, { clipPath: "inset(0 0% 0 0%)", opacity: 1, duration: 0.5, ease: "power3.out" }, at + 0.55);
+          GP.ring(tl, fxl, 540, 820, at + 0.05, { size: 520, color: "#F2C877", width: 10, scale: 2.0 });
+          GP.sparkles(tl, fxl, 540, 820, at + 0.35, { n: 8, radius: 380, size: 64, color: "#F7DFA0", seed: 12 });
+
+          const meet = $("#s3-meet"); meet.textContent = GP.t("l08");
+          tl.fromTo(meet, { opacity: 0, y: 30, filter: "blur(10px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.35, ease: "back.out(2)" }, l8.t - 0.05);
+
+          // ---- line 9: we bake / you sell ----
+          tl.to(meet, { opacity: 0, y: -30, duration: 0.25, ease: "power2.in" }, l9.t - 0.3);
+          tl.to("#s3-logo", { y: -260, scale: 0.72, duration: 0.5, ease: "power3.inOut" }, l9.t - 0.35);
+          const a1 = $("#s3-l1"); a1.innerHTML = GP.t("l09a");
+          const a2 = $("#s3-l2"); a2.innerHTML = GP.t("l09b");
+          const wa = GP.split(a1), wb = GP.split(a2);
+          GP.wordsIn(tl, wa, l9.t, { stagger: 0.07 });
+          GP.wordsIn(tl, wb, l9.t + l9.d * 0.5, { stagger: 0.07 });
+
+          // ---- exit: dive into the flower's heart, white flash ----
+          tl.to("#s3-logo", { scale: 7, duration: 0.45, ease: "power3.in", transformOrigin: "50% 33%" }, END - 0.45);
+          tl.to([a1, a2], { opacity: 0, scale: 1.3, duration: 0.25, ease: "power2.in" }, END - 0.4);
+          tl.fromTo("#s3-flash", { scale: 0, opacity: 0 }, { scale: 30, opacity: 1, duration: 0.3, ease: "power2.in" }, END - 0.3);
+          window.__timelines[ID] = tl;
+        })();
+      </script>
+    </template>
+  </body>
+</html>

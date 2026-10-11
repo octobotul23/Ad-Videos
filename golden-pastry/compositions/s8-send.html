@@ -1,0 +1,159 @@
+<!doctype html>
+<html>
+  <head><meta charset="UTF-8" /></head>
+  <body>
+    <template>
+      <style>
+        @font-face { font-family: "Fraunces"; src: url("fonts/fraunces-latin.woff2") format("woff2"); font-weight: 400 700; unicode-range: U+0000-00FF, U+2000-206F, U+20AC, U+2122; }
+        @font-face { font-family: "Fraunces"; src: url("fonts/fraunces-latin-ext.woff2") format("woff2"); font-weight: 400 700; unicode-range: U+0100-024F, U+0259, U+1E00-1EFF; }
+        @font-face { font-family: "Nunito Sans"; src: url("fonts/nunito-sans-latin.woff2") format("woff2"); font-weight: 400 800; unicode-range: U+0000-00FF, U+2000-206F, U+20AC, U+2122; }
+        @font-face { font-family: "Nunito Sans"; src: url("fonts/nunito-sans-latin-ext.woff2") format("woff2"); font-weight: 400 800; unicode-range: U+0100-024F, U+0259, U+1E00-1EFF; }
+        #root { position: absolute; inset: 0; overflow: hidden; font-family: "Nunito Sans", sans-serif; }
+        .s8-bg { position: absolute; inset: 0; background: radial-gradient(circle at 50% 50%, #FFFBF3 0%, #F8F0E2 55%, #EBDDC6 100%); }
+        .s8-stage { position: absolute; inset: 0; perspective: 1800px; }
+        .s8-cap { position: absolute; left: 60px; right: 60px; top: 250px; text-align: center; font-weight: 800; font-size: 92px;
+          line-height: 1.06; letter-spacing: -0.02em; color: #2B1D13; }
+        .s8-cap .em { font-family: "Fraunces", serif; font-weight: 700; color: #C9561B; }
+        .s8-badge { position: absolute; padding: 16px 34px; border-radius: 60px; font-weight: 800; font-size: 46px; white-space: nowrap; letter-spacing: .03em; }
+        #s8-map { position: absolute; inset: 0; }
+        #s8-big { position: absolute; left: 0; right: 0; top: 250px; text-align: center; font-weight: 800; font-size: 170px; color: #C9561B; letter-spacing: -0.03em; line-height: 1; }
+        #s8-sub { position: absolute; left: 0; right: 0; top: 440px; text-align: center; font-family: "Fraunces", serif; font-weight: 700; font-size: 84px; color: #2B1D13; }
+      </style>
+      <div id="root" data-composition-id="s8-send" data-width="1080" data-height="1920">
+        <div id="s8-bg" class="clip s8-bg" data-start="0" data-duration="20" data-track-index="0"></div>
+        <div id="s8-stage" class="clip s8-stage" data-start="0" data-duration="20" data-track-index="1">
+          <div id="s8-map"></div>
+          <div id="s8-devices"></div>
+          <div id="s8-slipbox"></div>
+          <div id="s8-cap1" class="s8-cap"></div>
+          <div id="s8-cap2" class="s8-cap"></div>
+          <div id="s8-big"></div>
+          <div id="s8-sub"></div>
+          <div id="s8-fx"></div>
+        </div>
+      </div>
+      <script>
+        (function () {
+          const ID = "s8-send", C = GP.C, $ = (s) => document.querySelector(s);
+          const l19 = GP.line(ID, "19"), l20 = GP.line(ID, "20"), l21 = GP.line(ID, "21");
+          const END = GP.sceneDur(ID);
+          const tl = gsap.timeline({ paused: true });
+          const dev = $("#s8-devices"), fxl = $("#s8-fx");
+
+          // ---- 19: tap send ----
+          const ph = GP.phone(dev, 560, GP.scr("shop-order-form"), { css: "left:260px;top:520px;" });
+          const sent = GP.mk("img", "", ph.screen, "position:absolute;left:0;top:0;width:100%;display:block;opacity:0;");
+          if (GP.scr("shop-order-sent")) sent.src = GP.scr("shop-order-sent");
+          tl.fromTo(ph.el, { y: 1400, rotationX: 24 }, { y: 0, rotationX: 0, duration: 0.5, ease: "back.out(1.2)" }, 0.0);
+          GP.tap(tl, ph.el, 280, 1040, l19.t + 0.35);
+          tl.fromTo(ph.el, { scale: 1 }, { scale: 0.97, duration: 0.08, yoyo: true, repeat: 1, ease: "power1.out", immediateRender: false }, l19.t + 0.4);
+          tl.fromTo(sent, { opacity: 0 }, { opacity: 1, duration: 0.25 }, l19.t + 0.55);
+          const c1 = $("#s8-cap1"); c1.innerHTML = GP.t("l19");
+          const w1 = GP.split(c1);
+          GP.wordsIn(tl, w1, l19.t);
+
+          // the order slip: cream card with the gold flower and three product dots
+          const slip = GP.mk("div", "", $("#s8-slipbox"), "position:absolute;left:390px;top:900px;width:300px;height:380px;border-radius:28px;background:#FFFBF3;box-shadow:0 20px 40px rgba(43,29,19,.3);opacity:0;");
+          const sh = GP.svg("svg", { viewBox: "-40 -40 80 80", width: 90, height: 90 }, slip);
+          sh.style.cssText = "position:absolute;left:105px;top:24px;";
+          for (let i = 0; i < 8; i++) GP.svg("path", { d: "M0 -4 C6 -12 6 -26 0 -34 C-6 -26 -6 -12 0 -4 Z", fill: "#E0B060", transform: "rotate(" + i * 45 + ")" }, sh);
+          [7, 1, 13].forEach((n, i) => {
+            GP.badge(slip, "assets/products/prod-" + n + ".jpg", 64, { css: "left:34px;top:" + (140 + i * 74) + "px;" });
+            GP.mk("div", "", slip, "position:absolute;left:116px;top:" + (166 + i * 74) + "px;width:" + (140 - i * 20) + "px;height:14px;border-radius:7px;background:#E7D9C2;");
+          });
+          tl.fromTo(slip, { scale: 0.3, opacity: 0, y: 120 }, { scale: 1, opacity: 1, y: 0, duration: 0.3, ease: "back.out(2)" }, l19.t + 0.6);
+          const trail = GP.svg("svg", { viewBox: "0 0 1080 1920", width: 1080, height: 1920 }, fxl);
+          trail.style.cssText = "position:absolute;left:0;top:0;overflow:visible";
+          const tp = GP.svg("path", { d: "M540 1090 C700 900 900 700 1300 300", stroke: "#F2A63B", "stroke-width": 12, "stroke-dasharray": "2 26", "stroke-linecap": "round", fill: "none", opacity: 0 }, trail);
+          tl.to(slip, { x: 760, y: -800, rotation: 30, scale: 0.6, duration: 0.45, ease: "power3.in" }, l19.t + l19.d + 0.3);
+          tl.fromTo(tp, { opacity: 0 }, { opacity: 1, duration: 0.1 }, l19.t + l19.d + 0.35);
+          tl.to(tp, { opacity: 0, duration: 0.25 }, l19.t + l19.d + 0.75);
+
+          // ---- 20: it lands in our lab ----
+          GP.wordsOut(tl, w1, l20.t - 0.3);
+          tl.to(ph.el, { x: -1100, rotationY: -30, duration: 0.42, ease: "power3.in" }, l20.t - 0.4);
+          const labSrc = GP.scr("lab-board-tablet");
+          const tab = GP.tablet(dev, 720, labSrc, { css: "left:180px;top:560px;" });
+          if (labSrc) GP.cropTop(tab.img, labSrc.indexOf("lab-board-tablet") >= 0 ? "lab-board-tablet" : "lab-board", tab.sw);
+          else {
+            // stand-in board until the real "Panou Laborator" shot is in assets/screens
+            const sc = tab.screen;
+            GP.mk("div", "", sc, "position:absolute;left:0;right:0;top:0;height:120px;background:#2B1D13;");
+            GP.mk("div", "", sc, "position:absolute;left:36px;top:36px;font-family:Fraunces,serif;font-weight:700;font-size:44px;color:#F2A63B;", "Laborator");
+            for (let col = 0; col < 3; col++) for (let r = 0; r < 4; r++)
+              GP.mk("div", "", sc, "position:absolute;left:" + (24 + col * 220) + "px;top:" + (160 + r * 210) + "px;width:196px;height:180px;border-radius:20px;background:#FFFBF3;box-shadow:0 6px 0 #E7D9C2;");
+          }
+          tl.fromTo(tab.el, { x: 1100, rotationY: 30 }, { x: 0, rotationY: 0, duration: 0.5, ease: "power3.out" }, l20.t - 0.3);
+          // the slip drops onto the board
+          tl.set(slip, { x: -620, y: -760, rotation: -25, scale: 0.6 }, l20.t - 0.05);
+          tl.to(slip, { x: 0, y: -40, rotation: -4, scale: 0.8, duration: 0.45, ease: "power3.out" }, l20.t);
+          tl.to(slip, { scaleY: 0.72, duration: 0.08, yoyo: true, repeat: 1, ease: "power1.out", transformOrigin: "50% 100%" }, l20.t + 0.45);
+          const nb = GP.mk("div", "s8-badge", fxl, "left:560px;top:600px;background:#C9561B;color:#FFFBF3;box-shadow:0 10px 0 #7E2A0C;", GP.t("neworder"));
+          tl.fromTo(nb, { scale: 0, rotation: 20 }, { scale: 1, rotation: 6, duration: 0.3, ease: "back.out(3)" }, l20.t + 0.55);
+          GP.ring(tl, fxl, 540, 1060, l20.t + 0.47, { size: 360, color: C.honey, width: 12 });
+          GP.sparkles(tl, fxl, 540, 1060, l20.t + 0.5, { n: 7, radius: 300, seed: 44 });
+          const c2 = $("#s8-cap2"); c2.innerHTML = GP.t("l20");
+          const w2 = GP.split(c2);
+          GP.wordsIn(tl, w2, l20.t);
+
+          // ---- 21: at your door in 24–48 h, at −18°C ----
+          const t1 = l21.t;
+          GP.wordsOut(tl, w2, t1 - 0.3);
+          tl.to([tab.el, slip, nb], { y: 1500, rotation: 12, duration: 0.45, ease: "power3.in", stagger: 0.03 }, t1 - 0.4);
+          const map = $("#s8-map");
+          const ms = GP.svg("svg", { viewBox: "0 0 1080 1920", width: 1080, height: 1920 }, map);
+          ms.style.cssText = "position:absolute;left:0;top:0;overflow:visible";
+          // soft "city blocks"
+          const rb = GP.seeded(91);
+          for (let i = 0; i < 14; i++) GP.svg("rect", { x: 40 + rb() * 900, y: 640 + rb() * 1050, width: 90 + rb() * 120, height: 70 + rb() * 100, rx: 22, fill: "#F1E6D4" }, ms);
+          const ROAD = "M210 760 C420 760 560 860 520 1040 C480 1220 260 1250 330 1420 C390 1560 700 1560 860 1490";
+          GP.svg("path", { d: ROAD, stroke: "#E7D9C2", "stroke-width": 90, "stroke-linecap": "round", fill: "none" }, ms);
+          const road = GP.svg("path", { d: ROAD, stroke: "#FFFBF3", "stroke-width": 10, "stroke-dasharray": "34 26", "stroke-linecap": "round", fill: "none" }, ms);
+          // pins: our lab (gold flower) and your shop (door)
+          const labPin = GP.mk("div", "", map, "position:absolute;left:110px;top:650px;width:200px;height:200px;border-radius:50%;background:#2B1D13;box-shadow:0 14px 26px rgba(43,29,19,.35);");
+          const lp = GP.svg("svg", { viewBox: "-40 -40 80 80", width: 140, height: 140 }, labPin);
+          lp.style.cssText = "position:absolute;left:30px;top:30px;";
+          for (let i = 0; i < 8; i++) GP.svg("path", { d: "M0 -4 C6 -12 6 -26 0 -34 C-6 -26 -6 -12 0 -4 Z", fill: "#E0B060", transform: "rotate(" + i * 45 + ")" }, lp);
+          const shopPin = GP.mk("div", "", map, "position:absolute;left:780px;top:1360px;width:200px;height:240px;");
+          GP.mk("div", "", shopPin, "position:absolute;inset:0;border-radius:100px 100px 16px 16px;background:linear-gradient(160deg,#E9814E,#B34A16);box-shadow:0 14px 26px rgba(43,29,19,.35);");
+          GP.mk("div", "", shopPin, "position:absolute;left:30px;right:30px;top:40px;height:60px;border-radius:12px;background:#FFFBF3;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:26px;color:#3E9B5B;", GP.t("open"));
+          tl.fromTo(ms, { opacity: 0 }, { opacity: 1, duration: 0.3 }, t1 - 0.1);
+          tl.fromTo(road, { strokeDashoffset: 0 }, { strokeDashoffset: -240, duration: 3, ease: "none" }, t1);
+          tl.fromTo([labPin, shopPin], { scale: 0 }, { scale: 1, duration: 0.35, ease: "back.out(2.6)", stagger: 0.12 }, t1 - 0.05);
+          // the van drives the road (point-on-path, seek-safe)
+          const roadPath = GP.svg("path", { d: ROAD, fill: "none" }, ms);
+          const van = GP.van(map, 240, { css: "left:0;top:0;" });
+          const L = roadPath.getTotalLength();
+          const drive = { p: 0 };
+          const tDrive = t1 + 0.35, dDrive = Math.min(2.6, l21.d * 0.68);
+          tl.to(drive, {
+            p: 1, duration: dDrive, ease: "power1.inOut",
+            onUpdate: function () {
+              const a = roadPath.getPointAtLength(drive.p * L * 0.86), b = roadPath.getPointAtLength(Math.min(L, drive.p * L * 0.86 + 2));
+              const flip = b.x < a.x ? -1 : 1;
+              van.el.style.transform = "translate(" + (a.x - 120) + "px," + (a.y - 130) + "px) scaleX(" + flip + ")";
+              van.wheels.forEach((w) => { w.style.transform = "rotate(" + drive.p * 1440 + "deg)"; });
+            }
+          }, tDrive);
+          tl.fromTo(van.el, { opacity: 0 }, { opacity: 1, duration: 0.15 }, tDrive);
+          tl.fromTo(shopPin, { scaleY: 1 }, { scaleY: 0.88, duration: 0.1, yoyo: true, repeat: 1, ease: "power1.out", transformOrigin: "50% 100%", immediateRender: false }, tDrive + dDrive);
+          GP.sparkles(tl, fxl, 880, 1480, tDrive + dDrive + 0.05, { n: 7, radius: 200, seed: 52 });
+          // 24–48 h · at your door · −18°C
+          const big = $("#s8-big"); big.textContent = GP.t("l21a");
+          const sub = $("#s8-sub"); sub.textContent = GP.t("l21b");
+          tl.fromTo(big, { scale: 2.2, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.22, ease: "power4.in" }, t1 + 0.1);
+          tl.fromTo(sub, { y: 40, opacity: 0, filter: "blur(8px)" }, { y: 0, opacity: 1, filter: "blur(0px)", duration: 0.35, ease: "back.out(2)" }, t1 + 0.55);
+          const cold = GP.mk("div", "s8-badge", fxl, "left:330px;top:1690px;background:#3E8FD1;color:#ffffff;box-shadow:0 10px 0 #1f5f96;font-size:60px;padding:18px 44px 18px 104px;", "−18°C");
+          GP.flake(cold, 58, "#ffffff", "left:30px;top:22px;");
+          tl.fromTo(cold, { scale: 2.4, opacity: 0, rotation: -10 }, { scale: 1, opacity: 1, rotation: -3, duration: 0.22, ease: "power4.in" }, t1 + l21.d * 0.75);
+          GP.shake(tl, map, t1 + l21.d * 0.75 + 0.22, { amp: 10, n: 4, dur: 0.2, seed: 6 });
+
+          // ---- exit: dive into the shop's door ----
+          tl.to(map, { scale: 3.2, duration: 0.5, ease: "power3.in", transformOrigin: "880px 1480px" }, END - 0.5);
+          tl.to([big, sub, cold], { opacity: 0, duration: 0.25 }, END - 0.45);
+          window.__timelines[ID] = tl;
+        })();
+      </script>
+    </template>
+  </body>
+</html>

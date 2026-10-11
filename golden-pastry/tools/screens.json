@@ -1,0 +1,6 @@
+{
+  "_note": "Optional crop for a screenshot, in its own pixels: top = rows to skip, width = the image's pixel width. Use it to start the lab board below the leftover test announcement.",
+  "lab-board-tablet": { "top": 0, "width": 1640 },
+  "lab-board": { "top": 0, "width": 1170 },
+  "driver-route": { "top": 0, "width": 1170 }
+}

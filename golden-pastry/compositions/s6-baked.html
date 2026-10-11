@@ -1,0 +1,132 @@
+<!doctype html>
+<html>
+  <head><meta charset="UTF-8" /></head>
+  <body>
+    <template>
+      <style>
+        @font-face { font-family: "Fraunces"; src: url("fonts/fraunces-latin.woff2") format("woff2"); font-weight: 400 700; unicode-range: U+0000-00FF, U+2000-206F, U+20AC, U+2122; }
+        @font-face { font-family: "Fraunces"; src: url("fonts/fraunces-latin-ext.woff2") format("woff2"); font-weight: 400 700; unicode-range: U+0100-024F, U+0259, U+1E00-1EFF; }
+        @font-face { font-family: "Nunito Sans"; src: url("fonts/nunito-sans-latin.woff2") format("woff2"); font-weight: 400 800; unicode-range: U+0000-00FF, U+2000-206F, U+20AC, U+2122; }
+        @font-face { font-family: "Nunito Sans"; src: url("fonts/nunito-sans-latin-ext.woff2") format("woff2"); font-weight: 400 800; unicode-range: U+0100-024F, U+0259, U+1E00-1EFF; }
+        #root { position: absolute; inset: 0; overflow: hidden; font-family: "Nunito Sans", sans-serif; }
+        .s6-bg { position: absolute; inset: 0; background: radial-gradient(circle at 50% 50%, #FFFBF3 0%, #F8F0E2 55%, #EBDDC6 100%); }
+        .s6-stage { position: absolute; inset: 0; }
+        #s6-ice { position: absolute; inset: 0; background: radial-gradient(circle at 50% 46%, #FFFFFF 0%, #EAF7FF 40%, #BFE6FF 75%, #7CC6F2 100%); }
+        #s6-warm { position: absolute; inset: 0; background: radial-gradient(circle at 50% 70%, #FFE9B8 0%, #F7C46B 38%, #E08B22 75%, #9A3610 100%); opacity: 0; }
+        #s6-heat { position: absolute; left: 0; right: 0; bottom: 0; height: 900px; background: radial-gradient(ellipse 60% 70% at 50% 100%, rgba(255,233,184,.9), rgba(242,166,59,0) 70%); opacity: 0; }
+        .s6-cap { position: absolute; left: 60px; right: 60px; top: 260px; text-align: center; font-weight: 800; font-size: 96px;
+          line-height: 1.06; letter-spacing: -0.02em; color: #2B1D13; }
+        .s6-cap .em { font-family: "Fraunces", serif; font-weight: 700; color: #C9561B; }
+        #s6-title { position: absolute; left: 0; right: 0; top: 330px; text-align: center; font-weight: 800; font-size: 200px; letter-spacing: 0.02em;
+          color: #FFE9B8; -webkit-text-stroke: 8px #9A3610; paint-order: stroke fill; text-shadow: 0 12px 0 #7E2A0C, 0 0 50px rgba(255,200,90,.9); }
+        #s6-q { position: absolute; left: 430px; top: 760px; width: 220px; text-align: center; font-family: "Fraunces", serif; font-weight: 700; font-size: 300px; color: #C9561B; line-height: 1; opacity: 0; }
+        .s6-chip { position: relative; padding: 18px 40px; border-radius: 60px; font-weight: 800; font-size: 52px; white-space: nowrap; }
+      </style>
+      <div id="root" data-composition-id="s6-baked" data-width="1080" data-height="1920">
+        <div id="s6-bg" class="clip s6-bg" data-start="0" data-duration="20" data-track-index="0"></div>
+        <div id="s6-stage" class="clip s6-stage" data-start="0" data-duration="20" data-track-index="1">
+          <div id="s6-ice"></div>
+          <div id="s6-warm"></div>
+          <div id="s6-heat"></div>
+          <div id="s6-world"></div>
+          <div id="s6-q">?</div>
+          <div id="s6-cap1" class="s6-cap"></div>
+          <div id="s6-title"></div>
+          <div id="s6-chips"></div>
+          <div id="s6-fx"></div>
+        </div>
+      </div>
+      <script>
+        (function () {
+          const ID = "s6-baked", C = GP.C, $ = (s) => document.querySelector(s);
+          const l15 = GP.line(ID, "15"), l16 = GP.line(ID, "16"), l17 = GP.line(ID, "17");
+          const END = GP.sceneDur(ID);
+          const tl = gsap.timeline({ paused: true });
+          const world = $("#s6-world"), fxl = $("#s6-fx");
+
+          // the frost of the last scene thaws to cream
+          tl.fromTo("#s6-ice", { opacity: 1 }, { opacity: 0, duration: 0.45, ease: "power1.inOut" }, 0.02);
+
+          // ---- 15: no oven? — the oven vanishes in a puff ----
+          const ov = GP.oven(world, 440, { css: "left:320px;top:800px;" });
+          tl.fromTo(ov.eyes, { scale: 1 }, { scale: 1.5, duration: 0.18, ease: "back.out(3)" }, l15.t - 0.05);
+          tl.fromTo(ov.el, { scale: 1, rotation: 0 }, { scale: 0, rotation: 30, duration: 0.25, ease: "back.in(2)" }, l15.t + 0.35);
+          const puffs = [];
+          const rp = GP.seeded(61);
+          for (let i = 0; i < 9; i++) {
+            const a = (i / 9) * Math.PI * 2, d = 120 + rp() * 70, sz = 120 + rp() * 90;
+            const p = GP.mk("div", "", world, "position:absolute;left:" + (540 + Math.cos(a) * d - sz / 2) + "px;top:" + (1010 + Math.sin(a) * d - sz / 2) + "px;width:" + sz + "px;height:" + sz + "px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#ffffff,#F1E6D4);opacity:0;");
+            puffs.push(p);
+          }
+          tl.fromTo(puffs, { scale: 0.2, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.25, ease: "back.out(2)", stagger: 0.02 }, l15.t + 0.5);
+          tl.to(puffs, { scale: 1.4, opacity: 0, duration: 0.35, ease: "power2.in", stagger: 0.02 }, l15.t + 0.8);
+          tl.fromTo("#s6-q", { scale: 0, opacity: 0, rotation: -20 }, { scale: 1, opacity: 1, rotation: 0, duration: 0.35, ease: "back.out(2.6)" }, l15.t + 0.7);
+          tl.fromTo("#s6-q", { y: 0 }, { y: -24, duration: 0.3, yoyo: true, repeat: 1, ease: "sine.inOut", immediateRender: false }, l15.t + 1.05);
+          const tg = GP.toggle(world, { css: "left:100px;top:1470px;" });
+          tg.iceK.style.opacity = "1";
+          tl.fromTo(tg.el, { y: 500, opacity: 0 }, { y: 0, opacity: 1, duration: 0.4, ease: "back.out(1.6)" }, l15.t - 0.1);
+          const c1 = $("#s6-cap1"); c1.innerHTML = GP.t("l15");
+          const w1 = GP.split(c1);
+          GP.wordsIn(tl, w1, l15.t);
+
+          // ---- 16: GO BAKED — the switch flips, a flame lights, warmth floods in ----
+          const tB = l16.t;
+          GP.wordsOut(tl, w1, tB - 0.2);
+          tl.to("#s6-q", { scale: 0, opacity: 0, duration: 0.18, ease: "power2.in" }, tB - 0.2);
+          tl.fromTo(tg.knob, { x: 0 }, { x: 428, duration: 0.3, ease: "back.out(1.8)" }, tB - 0.12);
+          tl.to(tg.iceK, { opacity: 0, duration: 0.15 }, tB - 0.05);
+          tl.fromTo(tg.hotK, { opacity: 0 }, { opacity: 1, duration: 0.2 }, tB - 0.05);
+          tl.to(tg.el, { y: 420, opacity: 0, duration: 0.3, ease: "power2.in" }, tB + 0.22);
+          tl.fromTo("#s6-warm", { opacity: 0 }, { opacity: 1, duration: 0.55, ease: "power2.out" }, tB + 0.05);
+          tl.fromTo("#s6-heat", { opacity: 0 }, { opacity: 1, duration: 0.6, ease: "power2.out" }, tB + 0.1);
+
+          // the flame: three layered tongues that flicker (finite yoyo)
+          const fl = GP.svg("svg", { viewBox: "-150 -360 300 380", width: 300, height: 380 }, world);
+          fl.style.cssText = "position:absolute;left:390px;top:1280px;overflow:visible;transform-origin:150px 360px;";
+          const tongues = [["M0 -340 C70 -240 140 -170 120 -80 C105 -20 60 10 0 10 C-60 10 -105 -20 -120 -80 C-140 -170 -70 -240 0 -340 Z", "#C9561B"],
+            ["M0 -260 C50 -190 100 -140 86 -70 C76 -26 44 0 0 0 C-44 0 -76 -26 -86 -70 C-100 -140 -50 -190 0 -260 Z", "#F2A63B"],
+            ["M0 -170 C30 -130 60 -96 52 -52 C46 -20 26 -4 0 -4 C-26 -4 -46 -20 -52 -52 C-60 -96 -30 -130 0 -170 Z", "#FFE39A"]];
+          const tps = tongues.map((t) => { const p = GP.svg("path", { d: t[0], fill: t[1] }, fl); p.style.transformOrigin = "0px 0px"; return p; });
+          // flame eyes: it's a friendly little flame
+          [[-26, -70], [26, -70]].forEach((e) => { GP.svg("ellipse", { cx: e[0], cy: e[1], rx: 9, ry: 12, fill: "#2B1D13" }, fl); });
+          GP.svg("path", { d: "M-18 -40 Q0 -26 18 -40", stroke: "#2B1D13", "stroke-width": 6, fill: "none", "stroke-linecap": "round" }, fl);
+          tl.fromTo(fl, { scale: 0, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.4, ease: "back.out(2.4)" }, tB + 0.38);
+          const flick = Math.max(0, Math.floor((END - tB - 0.5) / 0.16) - 1);
+          tl.fromTo(tps[0], { scaleY: 1, skewX: -4 }, { scaleY: 1.12, skewX: 5, duration: 0.16, ease: "sine.inOut", yoyo: true, repeat: flick, immediateRender: false }, tB + 0.4);
+          tl.fromTo(tps[1], { scaleY: 1.06, skewX: 4 }, { scaleY: 0.94, skewX: -5, duration: 0.13, ease: "sine.inOut", yoyo: true, repeat: flick + 2, immediateRender: false }, tB + 0.42);
+          tl.fromTo(tps[2], { scaleY: 0.95 }, { scaleY: 1.12, duration: 0.11, ease: "sine.inOut", yoyo: true, repeat: flick + 4, immediateRender: false }, tB + 0.44);
+          // rising embers
+          GP.burst(tl, fxl, 540, 1440, tB + 0.3, { n: 26, seed: 71, speed: 760, spread: 1.1, colors: ["#FFE39A", "#F2A63B", "#E9814E"], round: true, size: 14, gravity: -260, dur: 2.2 });
+          // golden croissant pops up above the flame, steam curls off it
+          const cr = GP.croissant(world, 360, { css: "left:360px;top:840px;" });
+          tl.fromTo(cr.el, { y: 500, scale: 0.4, opacity: 0 }, { y: 0, scale: 1, opacity: 1, duration: 0.5, ease: "back.out(1.8)" }, tB + 0.35);
+          tl.fromTo(cr.el, { rotation: -4 }, { rotation: 4, duration: 0.35, yoyo: true, repeat: 5, ease: "sine.inOut", immediateRender: false }, tB + 0.85);
+          GP.steam(tl, world, 540, 880, tB + 0.7, { w: 260 });
+          GP.sparkles(tl, fxl, 540, 960, tB + 0.6, { n: 7, radius: 280, color: "#FFE39A", seed: 41 });
+          // BAKED title, letters rise from the heat with a wobble
+          const ti = $("#s6-title"); ti.textContent = GP.t("l16");
+          ti.style.fontSize = Math.min(200, Math.floor(980 / (ti.textContent.length * 0.74))) + "px";
+          const letters = GP.split(ti, "chars");
+          tl.fromTo(letters, { y: 180, opacity: 0, scaleY: 0.4 }, { y: 0, opacity: 1, scaleY: 1, duration: 0.42, ease: "elastic.out(1,0.5)", stagger: 0.05 }, tB + 0.05);
+
+          // ---- 17: baked in our lab, just thaw and sell ----
+          const t7 = l17.t;
+          tl.to(ti, { y: -120, scale: 0.62, duration: 0.4, ease: "power3.inOut" }, t7 - 0.15);
+          const row = GP.mk("div", "", $("#s6-chips"), "position:absolute;left:0;right:0;top:1250px;display:flex;flex-direction:column;align-items:center;gap:26px;");
+          const chipA = GP.mk("div", "s6-chip", row, "background:#FFFBF3;color:#9A3610;box-shadow:0 10px 0 #C4741A;", GP.t("l17a"));
+          const chipB = GP.mk("div", "s6-chip", row, "background:#3E9B5B;color:#ffffff;box-shadow:0 10px 0 #23683a;", "✓ " + GP.t("l17b"));
+          tl.fromTo(chipA, { scale: 0, y: 40 }, { scale: 1, y: 0, duration: 0.32, ease: "back.out(2.4)" }, t7 + 0.05);
+          tl.fromTo(chipB, { scale: 2.2, opacity: 0, rotation: -6 }, { scale: 1, opacity: 1, rotation: -2, duration: 0.22, ease: "power4.in" }, t7 + l17.d * 0.55);
+          tl.to(fl, { y: 220, scale: 0.6, duration: 0.4, ease: "power3.inOut" }, t7 - 0.1);
+          tl.to(cr.el, { y: -50, duration: 0.18, yoyo: true, repeat: 3, ease: "power1.out" }, t7 + l17.d * 0.55 + 0.2);
+          GP.burst(tl, fxl, 540, 1420, t7 + l17.d * 0.55 + 0.22, { n: 20, seed: 81, speed: 1100, round: false, size: 20 });
+
+          // ---- exit: warm white-out ----
+          const wo = GP.mk("div", "", fxl, "position:absolute;inset:0;background:#FFF6E2;opacity:0;");
+          tl.to(wo, { opacity: 1, duration: 0.3, ease: "power2.in" }, END - 0.3);
+          window.__timelines[ID] = tl;
+        })();
+      </script>
+    </template>
+  </body>
+</html>

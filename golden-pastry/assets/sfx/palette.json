@@ -1,0 +1,246 @@
+{
+ "blip-E5": {
+  "duration": 0.39,
+  "lead": 0.004
+ },
+ "blip-G5": {
+  "duration": 0.328,
+  "lead": 0.004
+ },
+ "blip-C6": {
+  "duration": 0.246,
+  "lead": 0.004
+ },
+ "blip-E6": {
+  "duration": 0.195,
+  "lead": 0.004
+ },
+ "blip-G6": {
+  "duration": 0.164,
+  "lead": 0.004
+ },
+ "blip-A6": {
+  "duration": 0.146,
+  "lead": 0.004
+ },
+ "blip-C7": {
+  "duration": 0.123,
+  "lead": 0.004
+ },
+ "tone-C6": {
+  "duration": 2.065,
+  "lead": 0.004
+ },
+ "tone-E6": {
+  "duration": 1.638,
+  "lead": 0.004
+ },
+ "tone-G6": {
+  "duration": 1.4,
+  "lead": 0.004
+ },
+ "tone-C7": {
+  "duration": 1.049,
+  "lead": 0.004
+ },
+ "bell-G6": {
+  "duration": 5.514,
+  "lead": 0.004
+ },
+ "bell-C7": {
+  "duration": 4.131,
+  "lead": 0.004
+ },
+ "thump": {
+  "duration": 2.155,
+  "lead": 0.004
+ },
+ "slam": {
+  "duration": 2.218,
+  "lead": 0.004
+ },
+ "shatter": {
+  "duration": 2.965,
+  "lead": 0.004
+ },
+ "strike": {
+  "duration": 11.021,
+  "lead": 0.004
+ },
+ "chord": {
+  "duration": 2.551,
+  "lead": 0.004
+ },
+ "whoosh": {
+  "duration": 0.508,
+  "lead": 0.004
+ },
+ "whoosh-low": {
+  "duration": 0.725,
+  "lead": 0.004
+ },
+ "whoosh-hi": {
+  "duration": 0.404,
+  "lead": 0.004
+ },
+ "whoosh-b": {
+  "duration": 0.462,
+  "lead": 0.004
+ },
+ "whoosh-low-b": {
+  "duration": 0.82,
+  "lead": 0.004
+ },
+ "whoosh-hi-b": {
+  "duration": 0.363,
+  "lead": 0.004
+ },
+ "slam-b": {
+  "duration": 2.518,
+  "lead": 0.004
+ },
+ "stamp-b": {
+  "duration": 2.253,
+  "lead": 0.004
+ },
+ "zip-up": {
+  "duration": 0.287,
+  "lead": 0.004
+ },
+ "zip-up-b": {
+  "duration": 0.254,
+  "lead": 0.004
+ },
+ "zip-down": {
+  "duration": 0.219,
+  "lead": 0.004
+ },
+ "zip-down-b": {
+  "duration": 0.192,
+  "lead": 0.004
+ },
+ "sigh": {
+  "duration": 1.854,
+  "lead": 0.004
+ },
+ "slide-down": {
+  "duration": 1.265,
+  "lead": 0.004
+ },
+ "rise": {
+  "duration": 1.067,
+  "lead": 1.057
+ },
+ "swell": {
+  "duration": 2.463,
+  "lead": 2.453
+ },
+ "riser-short": {
+  "duration": 1.45,
+  "lead": 1.44
+ },
+ "drone": {
+  "duration": 1.864,
+  "lead": 0.004
+ },
+ "drip": {
+  "duration": 0.274,
+  "lead": 0.004
+ },
+ "drip-lo": {
+  "duration": 0.364,
+  "lead": 0.004
+ },
+ "bubble": {
+  "duration": 0.341,
+  "lead": 0.004
+ },
+ "bubble-b": {
+  "duration": 0.305,
+  "lead": 0.004
+ },
+ "tick": {
+  "duration": 0.109,
+  "lead": 0.004
+ },
+ "tock": {
+  "duration": 0.151,
+  "lead": 0.004
+ },
+ "key": {
+  "duration": 0.113,
+  "lead": 0.004
+ },
+ "typing": {
+  "duration": 1.45,
+  "lead": 0.004
+ },
+ "sparkle": {
+  "duration": 1.779,
+  "lead": 0.004
+ },
+ "arp-up": {
+  "duration": 0.418,
+  "lead": 0.004
+ },
+ "arp-down": {
+  "duration": 0.46,
+  "lead": 0.004
+ },
+ "tabs-run": {
+  "duration": 0.744,
+  "lead": 0.004
+ },
+ "doorbell": {
+  "duration": 8.474,
+  "lead": 0.004
+ },
+ "ding": {
+  "duration": 4.131,
+  "lead": 0.004
+ },
+ "deflate": {
+  "duration": 2.059,
+  "lead": 0.004
+ },
+ "freeze": {
+  "duration": 2.452,
+  "lead": 2.442
+ },
+ "crystal": {
+  "duration": 5.511,
+  "lead": 0.004
+ },
+ "ice-crack": {
+  "duration": 0.22,
+  "lead": 0.004
+ },
+ "snow": {
+  "duration": 2.223,
+  "lead": 0.004
+ },
+ "ignite": {
+  "duration": 0.9,
+  "lead": 0.004
+ },
+ "crackle": {
+  "duration": 1.572,
+  "lead": 0.004
+ },
+ "steam": {
+  "duration": 1.284,
+  "lead": 0.004
+ },
+ "drive": {
+  "duration": 3.352,
+  "lead": 0.004
+ },
+ "stamp": {
+  "duration": 2.251,
+  "lead": 0.004
+ },
+ "melt": {
+  "duration": 0.323,
+  "lead": 0.004
+ }
+}

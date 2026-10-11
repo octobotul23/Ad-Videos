@@ -3,3 +3,4 @@ node_modules/
 renders/*.mp4
 snapshots/
 .hyperframes/
+golden-pastry/assets/sfx/src/*.mp3

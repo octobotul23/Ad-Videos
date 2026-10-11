@@ -1,0 +1,124 @@
+<!doctype html>
+<html>
+  <head><meta charset="UTF-8" /></head>
+  <body>
+    <template>
+      <style>
+        @font-face { font-family: "Fraunces"; src: url("fonts/fraunces-latin.woff2") format("woff2"); font-weight: 400 700; unicode-range: U+0000-00FF, U+2000-206F, U+20AC, U+2122; }
+        @font-face { font-family: "Fraunces"; src: url("fonts/fraunces-latin-ext.woff2") format("woff2"); font-weight: 400 700; unicode-range: U+0100-024F, U+0259, U+1E00-1EFF; }
+        @font-face { font-family: "Nunito Sans"; src: url("fonts/nunito-sans-latin.woff2") format("woff2"); font-weight: 400 800; unicode-range: U+0000-00FF, U+2000-206F, U+20AC, U+2122; }
+        @font-face { font-family: "Nunito Sans"; src: url("fonts/nunito-sans-latin-ext.woff2") format("woff2"); font-weight: 400 800; unicode-range: U+0100-024F, U+0259, U+1E00-1EFF; }
+        #root { position: absolute; inset: 0; overflow: hidden; font-family: "Nunito Sans", sans-serif; }
+        .s9-bg { position: absolute; inset: 0; background: radial-gradient(circle at 50% 40%, #FFF3D6 0%, #FBE7CE 45%, #F1E6D4 100%); }
+        .s9-stage { position: absolute; inset: 0; }
+        .s9-cap { position: absolute; left: 60px; right: 60px; top: 260px; text-align: center; font-weight: 800; font-size: 96px;
+          line-height: 1.06; letter-spacing: -0.02em; color: #2B1D13; }
+        .s9-cap .em { font-family: "Fraunces", serif; font-weight: 700; color: #C9561B; }
+        #s9-sun { position: absolute; left: 290px; top: 560px; width: 500px; height: 500px; }
+        #s9-clock { position: absolute; left: 390px; top: 660px; width: 300px; height: 300px; }
+        #s9-case { position: absolute; left: 70px; top: 600px; width: 940px; height: 900px; }
+      </style>
+      <div id="root" data-composition-id="s9-full" data-width="1080" data-height="1920">
+        <div id="s9-bg" class="clip s9-bg" data-start="0" data-duration="20" data-track-index="0"></div>
+        <div id="s9-stage" class="clip s9-stage" data-start="0" data-duration="20" data-track-index="1">
+          <div id="s9-sun"></div>
+          <div id="s9-clock"></div>
+          <div id="s9-case"></div>
+          <div id="s9-queue"></div>
+          <div id="s9-cap1" class="s9-cap"></div>
+          <div id="s9-cap2" class="s9-cap"></div>
+          <div id="s9-cap3" class="s9-cap"></div>
+          <div id="s9-fx"></div>
+        </div>
+      </div>
+      <script>
+        (function () {
+          const ID = "s9-full", C = GP.C, $ = (s) => document.querySelector(s);
+          const l22 = GP.line(ID, "22"), l23 = GP.line(ID, "23"), l24 = GP.line(ID, "24");
+          const END = GP.sceneDur(ID);
+          const tl = gsap.timeline({ paused: true });
+          const fxl = $("#s9-fx");
+
+          // ---- 22: tomorrow, 7 a.m. — the sun comes up behind the clock ----
+          const sun = $("#s9-sun");
+          const rays = GP.mk("div", "", sun, "position:absolute;left:-200px;top:-200px;width:900px;height:900px;border-radius:50%;background:repeating-conic-gradient(rgba(242,166,59,.28) 0deg 10deg, rgba(242,166,59,0) 10deg 30deg);-webkit-mask-image:radial-gradient(circle,#000 30%,transparent 68%);mask-image:radial-gradient(circle,#000 30%,transparent 68%);");
+          GP.orb(sun, 250, 250, 440, "honey");
+          tl.fromTo(sun, { y: 700, opacity: 0 }, { y: 0, opacity: 1, duration: 0.7, ease: "power3.out" }, 0.05);
+          tl.fromTo(rays, { rotation: 0 }, { rotation: 60, duration: END, ease: "none" }, 0);
+          const ck = $("#s9-clock");
+          GP.mk("div", "", ck, "position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle at 36% 30%,#ffffff 0%,#FFFBF3 45%,#F1E6D4 100%);box-shadow:0 0 0 18px #FFFBF3, 0 20px 40px rgba(74,54,39,.3);");
+          const cs = GP.svg("svg", { viewBox: "-150 -150 300 300", width: 300, height: 300 }, ck);
+          cs.style.cssText = "position:absolute;left:0;top:0;overflow:visible";
+          for (let i = 0; i < 12; i++) GP.svg("rect", { x: -5, y: -134, width: 10, height: i % 3 ? 16 : 28, rx: 5, fill: i % 3 ? "#DAC7AC" : "#4A3627", transform: "rotate(" + i * 30 + ")" }, cs);
+          GP.svg("rect", { x: -8, y: -74, width: 16, height: 86, rx: 8, fill: "#2B1D13", transform: "rotate(210)" }, cs);
+          GP.svg("rect", { x: -6, y: -112, width: 12, height: 124, rx: 6, fill: "#4A3627" }, cs);
+          GP.svg("circle", { cx: 0, cy: 0, r: 12, fill: "#F2A63B" }, cs);
+          tl.fromTo(ck, { scale: 0, rotation: -30 }, { scale: 1, rotation: 0, duration: 0.45, ease: "back.out(2.2)" }, l22.t - 0.1);
+          GP.ring(tl, fxl, 540, 810, l22.t + l22.d * 0.6, { size: 360, color: C.honey, width: 12 });
+          const c1 = $("#s9-cap1"); c1.innerHTML = GP.t("l22");
+          const w1 = GP.split(c1);
+          GP.wordsIn(tl, w1, l22.t);
+
+          // ---- 23: full shelves ----
+          GP.wordsOut(tl, w1, l23.t - 0.25);
+          tl.to([sun, ck], { y: -1300, duration: 0.45, ease: "power3.in", stagger: 0.04 }, l23.t - 0.4);
+          const cse = $("#s9-case");
+          GP.mk("div", "", cse, "position:absolute;left:0;right:0;bottom:0;height:200px;border-radius:24px;background:linear-gradient(#4A3627,#2B1D13);box-shadow:0 30px 60px rgba(43,29,19,.4);");
+          GP.mk("div", "", cse, "position:absolute;left:30px;right:30px;bottom:150px;height:16px;border-radius:8px;background:#F2A63B;");
+          GP.mk("div", "", cse, "position:absolute;left:20px;right:20px;top:0;bottom:190px;border-radius:40px 40px 6px 6px;background:linear-gradient(180deg,rgba(234,247,255,.75),rgba(191,230,255,.45));border:10px solid #DAC7AC;");
+          const prods = [7, 1, 13, 9, 16, 19, 4, 12, 20];
+          const items = [];
+          [210, 400, 590].forEach((y, row) => {
+            GP.mk("div", "", cse, "position:absolute;left:44px;right:44px;top:" + (y + 70) + "px;height:12px;border-radius:6px;background:#B09A85;");
+            for (let k = 0; k < 3; k++) {
+              GP.mk("div", "", cse, "position:absolute;left:" + (80 + k * 270) + "px;top:" + (y + 46) + "px;width:240px;height:26px;border-radius:13px;background:#FFFBF3;box-shadow:0 6px 0 #E7D9C2;");
+              const n = prods[row * 3 + k];
+              if (row === 2 && k === 1) continue; // the croissant character's spot
+              items.push(GP.badge(cse, "assets/products/prod-" + n + ".jpg", 170, { css: "left:" + (115 + k * 270) + "px;top:" + (y - 118) + "px;" }));
+            }
+          });
+          const cr = GP.croissant(cse, 250, { css: "left:345px;top:560px;" });
+          GP.mk("div", "", cse, "position:absolute;left:60px;top:40px;width:120px;height:620px;transform:skewX(-14deg);background:linear-gradient(90deg,rgba(255,255,255,0),rgba(255,255,255,.6),rgba(255,255,255,0));");
+          tl.fromTo(cse, { y: 1400 }, { y: 0, duration: 0.45, ease: "back.out(1.1)" }, l23.t - 0.3);
+          tl.fromTo(items, { y: -700, scale: 0.6, opacity: 0 }, { y: 0, scale: 1, opacity: 1, duration: 0.35, ease: "bounce.out", stagger: 0.075 }, l23.t - 0.05);
+          tl.fromTo(cr.el, { y: 0 }, { y: -44, duration: 0.16, yoyo: true, repeat: 3, ease: "power1.out", immediateRender: false }, l23.t + 0.55);
+          const c2 = $("#s9-cap2"); c2.innerHTML = GP.t("l23");
+          const w2 = GP.split(c2);
+          GP.wordsIn(tl, w2, l23.t);
+          GP.sparkles(tl, fxl, 540, 1000, l23.t + 0.7, { n: 9, radius: 430, seed: 61, size: 60 });
+
+          // ---- 24: happy queue ----
+          GP.wordsOut(tl, w2, l24.t - 0.22);
+          tl.to(cse, { y: -150, scale: 0.86, duration: 0.4, ease: "power3.inOut", transformOrigin: "50% 0%" }, l24.t - 0.3);
+          const tones = ["honey", "crust", "cream", "cocoa", "honey", "crust"];
+          const qs = [];
+          tones.forEach((tn, i) => {
+            const w = GP.mk("div", "", $("#s9-queue"), "position:absolute;left:" + (30 + i * 175) + "px;top:" + (1520 + (i % 2) * 60) + "px;width:200px;height:200px;");
+            GP.blob(w, 200, tn, { happy: true });
+            qs.push(w);
+          });
+          tl.fromTo(qs, { y: 600 }, { y: 0, duration: 0.45, ease: "back.out(1.6)", stagger: 0.06 }, l24.t - 0.25);
+          tl.to(qs, { y: -34, duration: 0.15, yoyo: true, repeat: 3, ease: "power1.out", stagger: 0.05 }, l24.t + 0.35);
+          // hearts
+          const hearts = [];
+          for (let i = 0; i < 7; i++) {
+            const h = GP.svg("svg", { viewBox: "0 0 100 90", width: 70, height: 63 }, fxl);
+            h.style.cssText = "position:absolute;left:" + (80 + i * 140) + "px;top:1500px;opacity:0;overflow:visible";
+            GP.svg("path", { d: "M50 88 C20 66 0 48 0 26 C0 10 12 0 27 0 C38 0 46 6 50 14 C54 6 62 0 73 0 C88 0 100 10 100 26 C100 48 80 66 50 88 Z", fill: i % 2 ? "#E9814E" : "#D9433B" }, h);
+            hearts.push(h);
+          }
+          tl.fromTo(hearts, { y: 0, opacity: 0, scale: 0.3 }, { y: -300, opacity: 1, scale: 1, duration: 0.7, ease: "power2.out", stagger: 0.06 }, l24.t + 0.3);
+          tl.to(hearts, { opacity: 0, duration: 0.25, stagger: 0.04 }, l24.t + 0.9);
+          const c3 = $("#s9-cap3"); c3.innerHTML = GP.t("l24");
+          const w3 = GP.split(c3);
+          GP.wordsIn(tl, w3, l24.t);
+
+          // ---- exit: espresso curtain rises for the end card ----
+          const curtain = GP.mk("div", "", fxl, "position:absolute;left:0;right:0;top:0;height:1920px;background:#2B1D13;");
+          tl.fromTo(curtain, { y: 1920 }, { y: 0, duration: 0.42, ease: "power3.in" }, END - 0.42);
+          window.__timelines[ID] = tl;
+        })();
+      </script>
+    </template>
+  </body>
+</html>

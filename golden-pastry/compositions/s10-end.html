@@ -1,0 +1,110 @@
+<!doctype html>
+<html>
+  <head><meta charset="UTF-8" /></head>
+  <body>
+    <template>
+      <style>
+        @font-face { font-family: "Fraunces"; src: url("fonts/fraunces-latin.woff2") format("woff2"); font-weight: 400 700; unicode-range: U+0000-00FF, U+2000-206F, U+20AC, U+2122; }
+        @font-face { font-family: "Fraunces"; src: url("fonts/fraunces-latin-ext.woff2") format("woff2"); font-weight: 400 700; unicode-range: U+0100-024F, U+0259, U+1E00-1EFF; }
+        @font-face { font-family: "Nunito Sans"; src: url("fonts/nunito-sans-latin.woff2") format("woff2"); font-weight: 400 800; unicode-range: U+0000-00FF, U+2000-206F, U+20AC, U+2122; }
+        @font-face { font-family: "Nunito Sans"; src: url("fonts/nunito-sans-latin-ext.woff2") format("woff2"); font-weight: 400 800; unicode-range: U+0100-024F, U+0259, U+1E00-1EFF; }
+        #root { position: absolute; inset: 0; overflow: hidden; font-family: "Nunito Sans", sans-serif; }
+        .s10-bg { position: absolute; inset: 0; background: radial-gradient(circle at 50% 30%, #4A3627 0%, #2B1D13 55%, #1B120B 100%); }
+        .s10-stage { position: absolute; inset: 0; }
+        #s10-rays { position: absolute; left: -460px; top: -560px; width: 2000px; height: 2000px; border-radius: 50%;
+          background: repeating-conic-gradient(from 0deg, rgba(242,166,59,.12) 0deg 7deg, rgba(242,166,59,0) 7deg 22.5deg);
+          -webkit-mask-image: radial-gradient(circle, #000 0%, rgba(0,0,0,.6) 35%, transparent 62%); mask-image: radial-gradient(circle, #000 0%, rgba(0,0,0,.6) 35%, transparent 62%); }
+        #s10-mark { position: absolute; left: 360px; top: 200px; width: 360px; height: 360px; overflow: visible; }
+        #s10-word { position: absolute; left: 230px; top: 600px; width: 620px; height: 153px; background: url(assets/brand/wordmark-gold.png) center/contain no-repeat; }
+        #s10-tag { position: absolute; left: 60px; right: 60px; top: 820px; text-align: center; font-family: "Fraunces", serif; font-weight: 600; font-size: 66px; line-height: 1.12; color: #FBE7CE; }
+        #s10-tag .em { color: #F2A63B; font-weight: 700; }
+        #s10-line { position: absolute; left: 340px; top: 935px; width: 400px; height: 8px; border-radius: 4px; background: #F2A63B; transform-origin: 0 50%; }
+        #s10-card { position: absolute; left: 230px; top: 1070px; width: 620px; height: 400px; border-radius: 36px; overflow: hidden;
+          background: url(assets/brand/trial-pack.png) center/cover no-repeat; box-shadow: 0 30px 60px rgba(0,0,0,.45); border: 8px solid #FBE7CE; }
+        #s10-chip { position: absolute; left: 50%; top: 1440px; transform-origin: 50% 50%; padding: 12px 30px; border-radius: 40px; background: #FBE7CE; color: #9A3610;
+          font-weight: 800; font-size: 40px; white-space: nowrap; }
+        #s10-cta { position: absolute; left: 110px; top: 1560px; width: 860px; height: 140px; border-radius: 70px; background: linear-gradient(180deg, #F7C46B, #F2A63B 50%, #E08B22);
+          box-shadow: 0 12px 0 #9A3610, 0 24px 40px rgba(0,0,0,.4); display: flex; align-items: center; justify-content: center; overflow: hidden;
+          font-weight: 800; font-size: 54px; color: #2B1D13; letter-spacing: -0.01em; white-space: nowrap; }
+        #s10-shine { position: absolute; top: -20px; left: -200px; width: 140px; height: 180px; transform: skewX(-20deg); background: linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,.75), rgba(255,255,255,0)); }
+        #s10-url { position: absolute; left: 0; right: 0; top: 1735px; text-align: center; font-weight: 800; font-size: 50px; color: #FBE7CE; letter-spacing: .02em; }
+        #s10-cursor { position: absolute; left: 0; top: 0; width: 90px; height: 110px; }
+      </style>
+      <div id="root" data-composition-id="s10-end" data-width="1080" data-height="1920">
+        <div id="s10-bg" class="clip s10-bg" data-start="0" data-duration="20" data-track-index="0"></div>
+        <div id="s10-stage" class="clip s10-stage" data-start="0" data-duration="20" data-track-index="1">
+          <div id="s10-rays"></div>
+          <svg id="s10-mark" viewBox="-300 -300 600 600"></svg>
+          <div id="s10-word"></div>
+          <div id="s10-tag"></div>
+          <div id="s10-line"></div>
+          <div id="s10-card"></div>
+          <div id="s10-chip"></div>
+          <div id="s10-cta"><span id="s10-ctat"></span><div id="s10-shine"></div></div>
+          <div id="s10-url"></div>
+          <div id="s10-fx"></div>
+          <svg id="s10-cursor" viewBox="0 0 90 110"><path d="M8 4 L8 88 L30 68 L46 104 L62 97 L46 62 L76 62 Z" fill="#FFFBF3" stroke="#2B1D13" stroke-width="7" stroke-linejoin="round"/></svg>
+        </div>
+      </div>
+      <script>
+        (function () {
+          const ID = "s10-end", C = GP.C, $ = (s) => document.querySelector(s);
+          const l25 = GP.line(ID, "25"), l26 = GP.line(ID, "26"), l27 = GP.line(ID, "27");
+          const END = GP.sceneDur(ID);
+          const tl = gsap.timeline({ paused: true });
+          const fxl = $("#s10-fx");
+          tl.fromTo("#s10-rays", { rotation: 0, opacity: 0 }, { rotation: 50, opacity: 1, duration: END, ease: "none" }, 0);
+
+          // ---- 25: the flower blooms again, the wordmark wipes in ----
+          const mark = $("#s10-mark");
+          const defs = GP.svg("defs", {}, mark);
+          const g = GP.svg("linearGradient", { id: "s10gold", x1: "0", y1: "0", x2: "1", y2: "1" }, defs);
+          [["0", "#F7DFA0"], [".45", "#E0B060"], [".75", "#C48E3E"], ["1", "#F2C877"]].forEach((s) => GP.svg("stop", { offset: s[0], "stop-color": s[1] }, g));
+          const rays = [], petals = [], dots = [];
+          for (let i = 0; i < 8; i++) rays.push(GP.svg("line", { x1: 0, y1: -175, x2: 0, y2: -262, stroke: "url(#s10gold)", "stroke-width": 5, "stroke-linecap": "round", transform: "rotate(" + (i * 45 + 22.5) + ")" }, mark));
+          for (let i = 0; i < 8; i++) {
+            const pg = GP.svg("g", { transform: "rotate(" + i * 45 + ")" }, mark);
+            const p = GP.svg("path", { d: "M0 -26 C34 -78 34 -170 0 -232 C-34 -170 -34 -78 0 -26 Z", fill: "url(#s10gold)" }, pg);
+            p.style.transformOrigin = "0px -26px";
+            petals.push(p);
+          }
+          const core = GP.svg("circle", { cx: 0, cy: 0, r: 17, fill: "url(#s10gold)" }, mark);
+          [[0, -285], [285, 0], [0, 285], [-285, 0]].forEach((p) => dots.push(GP.svg("circle", { cx: p[0], cy: p[1], r: 13, fill: "url(#s10gold)" }, mark)));
+          const at = Math.max(0.15, l25.t - 0.25);
+          tl.fromTo(petals, { scale: 0, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.4, ease: "back.out(2.2)", stagger: 0.05 }, at);
+          tl.fromTo(core, { scale: 0 }, { scale: 1, duration: 0.3, ease: "back.out(3)", transformOrigin: "0px 0px" }, at + 0.1);
+          tl.fromTo(rays, { attr: { y2: -175 } }, { attr: { y2: -262 }, duration: 0.35, ease: "power2.out", stagger: 0.03 }, at + 0.3);
+          tl.fromTo(dots, { scale: 0 }, { scale: 1, duration: 0.25, ease: "back.out(3)", stagger: 0.05, transformOrigin: "50% 50%" }, at + 0.42);
+          tl.fromTo(mark, { rotation: -60 }, { rotation: 0, duration: 0.9, ease: "power3.out" }, at);
+          tl.fromTo("#s10-word", { clipPath: "inset(0 50% 0 50%)", opacity: 0 }, { clipPath: "inset(0 0% 0 0%)", opacity: 1, duration: 0.5, ease: "power3.out" }, l25.t);
+          GP.ring(tl, fxl, 540, 380, at + 0.05, { size: 340, color: "#F2C877", width: 9, scale: 2.0 });
+          GP.sparkles(tl, fxl, 540, 380, at + 0.35, { n: 8, radius: 250, size: 52, color: "#F7DFA0", seed: 14 });
+
+          // ---- 26: from our lab to your shelves ----
+          const tag = $("#s10-tag"); tag.innerHTML = GP.t("l26");
+          GP.wordsIn(tl, GP.split(tag), l26.t, { stagger: 0.07 });
+          tl.fromTo("#s10-line", { scaleX: 0 }, { scaleX: 1, duration: 0.5, ease: "power3.inOut" }, l26.t + l26.d * 0.6);
+
+          // ---- 27: start with a trial pack ----
+          tl.fromTo("#s10-card", { y: 500, rotation: 6, opacity: 0 }, { y: 0, rotation: -2, opacity: 1, duration: 0.5, ease: "back.out(1.4)" }, l27.t - 0.45);
+          const chip = $("#s10-chip"); chip.textContent = GP.t("trial");
+          tl.fromTo(chip, { xPercent: -50, scale: 0 }, { xPercent: -50, scale: 1, duration: 0.3, ease: "back.out(2.6)" }, l27.t - 0.1);
+          $("#s10-ctat").textContent = GP.t("l27");
+          tl.fromTo("#s10-cta", { scale: 0.4, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.4, ease: "back.out(2)" }, l27.t - 0.05);
+          tl.fromTo("#s10-shine", { x: 0 }, { x: 1300, duration: 0.7, ease: "power2.inOut" }, l27.t + 0.4);
+          $("#s10-url").textContent = GP.t("url");
+          tl.fromTo("#s10-url", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.35, ease: "power2.out" }, l27.t + 0.3);
+          // the cursor flies in and presses the button
+          const tPress = l27.t + l27.d + 0.35;
+          tl.fromTo("#s10-cursor", { x: 1150, y: 1950, rotation: 20 }, { x: 850, y: 1630, rotation: 0, duration: 0.55, ease: "power3.out" }, tPress - 0.6);
+          tl.to("#s10-cursor", { scale: 0.85, duration: 0.08, yoyo: true, repeat: 1, ease: "power1.out" }, tPress - 0.02);
+          tl.to("#s10-cta", { scale: 0.93, duration: 0.08, ease: "power2.in" }, tPress);
+          tl.to("#s10-cta", { scale: 1, duration: 0.5, ease: "elastic.out(1.2,0.4)" }, tPress + 0.09);
+          GP.ring(tl, fxl, 540, 1630, tPress + 0.05, { size: 300, color: "#F7C46B", width: 12, scale: 3 });
+          GP.burst(tl, fxl, 540, 1600, tPress + 0.05, { n: 44, seed: 99, speed: 1700, colors: ["#F2A63B", "#F7C46B", "#FBE7CE", "#C9561B", "#E0B060"], size: 24, dur: 1.6 });
+          window.__timelines[ID] = tl;
+        })();
+      </script>
+    </template>
+  </body>
+</html>

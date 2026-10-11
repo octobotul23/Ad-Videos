@@ -1,0 +1,154 @@
+<!doctype html>
+<html>
+  <head><meta charset="UTF-8" /></head>
+  <body>
+    <template>
+      <style>
+        @font-face { font-family: "Fraunces"; src: url("fonts/fraunces-latin.woff2") format("woff2"); font-weight: 400 700; unicode-range: U+0000-00FF, U+2000-206F, U+20AC, U+2122; }
+        @font-face { font-family: "Fraunces"; src: url("fonts/fraunces-latin-ext.woff2") format("woff2"); font-weight: 400 700; unicode-range: U+0100-024F, U+0259, U+1E00-1EFF; }
+        @font-face { font-family: "Nunito Sans"; src: url("fonts/nunito-sans-latin.woff2") format("woff2"); font-weight: 400 800; unicode-range: U+0000-00FF, U+2000-206F, U+20AC, U+2122; }
+        @font-face { font-family: "Nunito Sans"; src: url("fonts/nunito-sans-latin-ext.woff2") format("woff2"); font-weight: 400 800; unicode-range: U+0100-024F, U+0259, U+1E00-1EFF; }
+        #root { position: absolute; inset: 0; overflow: hidden; font-family: "Nunito Sans", sans-serif; }
+        .s1-bg { position: absolute; inset: 0; background: radial-gradient(circle at 50% 42%, #FFFBF3 0%, #F8F0E2 55%, #EBDDC6 100%); }
+        .s1-stage { position: absolute; inset: 0; }
+        .s1-cap { position: absolute; left: 70px; right: 70px; top: 300px; text-align: center; font-weight: 800; font-size: 92px;
+          line-height: 1.06; letter-spacing: -0.02em; color: #2B1D13; }
+        .s1-cap em, .s1-cap .em { font-family: "Fraunces", serif; font-style: normal; font-weight: 700; color: #C9561B; }
+        #s1-clock { position: absolute; left: 230px; top: 560px; width: 620px; height: 620px; }
+        #s1-door { position: absolute; left: 270px; top: 560px; width: 540px; height: 960px; }
+        #s1-case { position: absolute; left: 70px; top: 640px; width: 940px; height: 900px; }
+        #s1-empty { position: absolute; left: 0; right: 0; top: 270px; text-align: center; font-weight: 800; font-size: 210px;
+          letter-spacing: -0.03em; color: #C9561B; text-shadow: 0 10px 0 #7E2A0C; opacity: 0; }
+        #s1-sweat { position: absolute; width: 34px; height: 46px; border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+          background: linear-gradient(#ffffff, #9fd6ff); opacity: 0; }
+      </style>
+      <div id="root" data-composition-id="s1-hook" data-width="1080" data-height="1920">
+        <div id="s1-bg" class="clip s1-bg" data-start="0" data-duration="20" data-track-index="0"></div>
+        <div id="s1-stage" class="clip s1-stage" data-start="0" data-duration="20" data-track-index="1">
+          <div id="s1-orbs"></div>
+          <div id="s1-clock"></div>
+          <div id="s1-door"></div>
+          <div id="s1-case"></div>
+          <div id="s1-cap1" class="s1-cap"></div>
+          <div id="s1-cap2" class="s1-cap"></div>
+          <div id="s1-cap3" class="s1-cap"></div>
+          <div id="s1-empty"></div>
+          <div id="s1-fx"></div>
+        </div>
+      </div>
+      <script>
+        (function () {
+          const ID = "s1-hook", C = GP.C, $ = (s) => document.querySelector(s);
+          const l1 = GP.line(ID, "01"), l2 = GP.line(ID, "02"), l3 = GP.line(ID, "03"), l4 = GP.line(ID, "04");
+          const END = GP.sceneDur(ID);
+          const tl = gsap.timeline({ paused: true });
+          const stage = $("#s1-stage"), fxl = $("#s1-fx");
+
+          // ---- orbs ----
+          const orbs = [GP.orb($("#s1-orbs"), 90, 600, 110, "honey"), GP.orb($("#s1-orbs"), 1000, 560, 80, "crust"),
+            GP.orb($("#s1-orbs"), 110, 1500, 80, "cream"), GP.orb($("#s1-orbs"), 960, 1640, 150, "honey"), GP.orb($("#s1-orbs"), 150, 150, 56, "cream")];
+          tl.fromTo(orbs, { scale: 0 }, { scale: 1, duration: 0.5, ease: "back.out(2.4)", stagger: 0.06 }, 0.05);
+          GP.bob(tl, orbs, 0.6, END - 0.6, { seed: 4 });
+
+          // ---- clock ----
+          const ck = $("#s1-clock");
+          const face = GP.mk("div", "", ck, "position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle at 36% 30%,#ffffff 0%,#FFFBF3 45%,#F1E6D4 100%);" +
+            "box-shadow:0 0 0 34px #F2A63B, 0 0 0 40px #C4741A, 0 40px 70px rgba(74,54,39,.35), inset 0 -16px 30px rgba(0,0,0,.08);");
+          const cs = GP.svg("svg", { viewBox: "-310 -310 620 620", width: 620, height: 620 }, ck);
+          cs.style.cssText = "position:absolute;left:0;top:0;overflow:visible";
+          for (let i = 0; i < 12; i++) GP.svg("rect", { x: -9, y: -276, width: 18, height: i % 3 ? 34 : 58, rx: 9, fill: i % 3 ? "#DAC7AC" : "#4A3627", transform: "rotate(" + i * 30 + ")" }, cs);
+          const hourH = GP.svg("g", {}, cs), minH = GP.svg("g", {}, cs), secH = GP.svg("g", {}, cs);
+          GP.svg("rect", { x: -15, y: -150, width: 30, height: 175, rx: 15, fill: "#2B1D13" }, hourH);
+          GP.svg("rect", { x: -11, y: -232, width: 22, height: 255, rx: 11, fill: "#4A3627" }, minH);
+          GP.svg("rect", { x: -4, y: -246, width: 8, height: 280, rx: 4, fill: "#C9561B" }, secH);
+          GP.svg("circle", { cx: 0, cy: 0, r: 22, fill: "#F2A63B", stroke: "#C4741A", "stroke-width": 6 }, cs);
+          [hourH, minH, secH].forEach((h) => h.style.transformOrigin = "0px 0px");
+          tl.fromTo(ck, { scale: 0.3, opacity: 0, rotation: -25 }, { scale: 1, opacity: 1, rotation: 0, duration: 0.6, ease: "back.out(1.8)" }, 0.0);
+          tl.fromTo(hourH, { rotation: 207 }, { rotation: 210, duration: l1.t, ease: "none" }, 0);
+          tl.fromTo(minH, { rotation: 336 }, { rotation: 354, duration: l1.t - 0.08, ease: "none" }, 0);
+          // second hand ticks
+          const ticks = [0.15, 0.48, 0.81];
+          tl.fromTo(secH, { rotation: 300 }, { rotation: 318, duration: 0.08, ease: "back.out(3)" }, ticks[0]);
+          tl.to(secH, { rotation: 336, duration: 0.08, ease: "back.out(3)" }, ticks[1]);
+          tl.to(secH, { rotation: 354, duration: 0.08, ease: "back.out(3)" }, ticks[2]);
+          tl.to(secH, { rotation: 360, duration: 0.1, ease: "back.out(3)" }, l1.t - 0.05);
+          tl.to(minH, { rotation: 360, duration: 0.12, ease: "back.out(4)" }, l1.t - 0.03);
+          tl.fromTo(ck, { y: 0 }, { y: 10, duration: 0.08, yoyo: true, repeat: 3, ease: "none", immediateRender: false }, l1.t - 0.03);
+          GP.ring(tl, fxl, 540, 870, l1.t, { size: 700, color: C.honey, width: 14, scale: 1.4 });
+          GP.sparkles(tl, fxl, 540, 870, l1.t + 0.05, { n: 7, radius: 360, size: 60, seed: 3 });
+
+          // ---- line 1 ----
+          const c1 = $("#s1-cap1"); c1.innerHTML = GP.t("l01");
+          const w1 = GP.split(c1);
+          GP.wordsIn(tl, w1, l1.t);
+
+          // ---- line 2: clock to the corner, door + sign flip ----
+          GP.wordsOut(tl, w1, l2.t - 0.22);
+          tl.to(ck, { scale: 0.26, x: 370, y: -715, duration: 0.5, ease: "power3.inOut" }, l2.t - 0.3);
+          const door = $("#s1-door");
+          GP.mk("div", "", door, "position:absolute;inset:0;border-radius:270px 270px 18px 18px;background:#4A3627;box-shadow:0 30px 60px rgba(43,29,19,.35);");
+          GP.mk("div", "", door, "position:absolute;left:34px;right:34px;top:34px;bottom:0;border-radius:236px 236px 10px 10px;background:linear-gradient(160deg,#E9814E,#B34A16 70%);box-shadow:inset 0 -20px 40px rgba(0,0,0,.18);");
+          GP.mk("div", "", door, "position:absolute;left:110px;right:110px;top:110px;height:300px;border-radius:160px 160px 14px 14px;background:linear-gradient(150deg,#ffffff 0%,#BFE6FF 60%,#9cc9e8 100%);opacity:.85;");
+          GP.mk("div", "", door, "position:absolute;right:80px;top:560px;width:44px;height:44px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff7e0,#F2A63B 50%,#C4741A);");
+          const sign = GP.mk("div", "", door, "position:absolute;left:90px;top:300px;width:360px;height:170px;perspective:900px;");
+          GP.mk("div", "", sign, "position:absolute;left:60px;top:-90px;width:240px;height:100px;border:6px solid #2B1D13;border-bottom:none;border-radius:120px 120px 0 0;");
+          const card = GP.mk("div", "", sign, "position:absolute;inset:0;transform-style:preserve-3d;");
+          const sideA = GP.mk("div", "", card, "position:absolute;inset:0;border-radius:24px;background:#FFFBF3;border:8px solid #2B1D13;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:66px;color:#D9433B;backface-visibility:hidden;letter-spacing:.04em;", GP.t("closed"));
+          const sideB = GP.mk("div", "", card, "position:absolute;inset:0;border-radius:24px;background:#FFFBF3;border:8px solid #2B1D13;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:66px;color:#3E9B5B;backface-visibility:hidden;transform:rotateY(180deg);letter-spacing:.04em;", GP.t("open"));
+          tl.fromTo(door, { y: 1500 }, { y: 0, duration: 0.55, ease: "back.out(1.3)" }, l2.t - 0.25);
+          tl.fromTo(sign, { rotation: -14 }, { rotation: 8, duration: 0.5, ease: "sine.inOut", yoyo: true, repeat: 1, immediateRender: false }, l2.t + 0.3);
+          tl.fromTo(card, { rotationY: 0 }, { rotationY: 180, duration: 0.5, ease: "back.out(1.6)", immediateRender: false }, l2.t + l2.d - 0.25);
+          GP.sparkles(tl, fxl, 540, 945, l2.t + l2.d + 0.05, { n: 6, radius: 230, color: "#7ed39b", seed: 8 });
+          const c2 = $("#s1-cap2"); c2.innerHTML = GP.t("l02");
+          const w2 = GP.split(c2);
+          GP.wordsIn(tl, w2, l2.t);
+
+          // ---- line 3: whip to the display case ----
+          GP.wordsOut(tl, w2, l3.t - 0.2);
+          tl.to(door, { x: -1150, rotation: -8, duration: 0.45, ease: "power3.in" }, l3.t - 0.25);
+          const cse = $("#s1-case");
+          GP.mk("div", "", cse, "position:absolute;left:0;right:0;bottom:0;height:200px;border-radius:24px;background:linear-gradient(#4A3627,#2B1D13);box-shadow:0 30px 60px rgba(43,29,19,.4);");
+          GP.mk("div", "", cse, "position:absolute;left:30px;right:30px;bottom:150px;height:16px;border-radius:8px;background:#F2A63B;");
+          GP.mk("div", "", cse, "position:absolute;left:20px;right:20px;top:0;bottom:190px;border-radius:40px 40px 6px 6px;background:linear-gradient(180deg,rgba(234,247,255,.75),rgba(191,230,255,.45));border:10px solid #DAC7AC;");
+          const trays = [];
+          [210, 400, 590].forEach((y, i) => {
+            GP.mk("div", "", cse, "position:absolute;left:44px;right:44px;top:" + (y + 70) + "px;height:12px;border-radius:6px;background:#B09A85;");
+            for (let k = 0; k < 3; k++) trays.push(GP.mk("div", "", cse, "position:absolute;left:" + (80 + k * 270) + "px;top:" + (y + 46) + "px;width:240px;height:26px;border-radius:13px;background:#FFFBF3;box-shadow:0 6px 0 #E7D9C2;"));
+          });
+          const glare = GP.mk("div", "", cse, "position:absolute;left:60px;top:40px;width:120px;height:620px;transform:skewX(-14deg);background:linear-gradient(90deg,rgba(255,255,255,0),rgba(255,255,255,.75),rgba(255,255,255,0));");
+          tl.fromTo(cse, { x: 1150 }, { x: 0, duration: 0.5, ease: "power3.out" }, l3.t - 0.12);
+          tl.fromTo(glare, { x: -200, opacity: 0 }, { x: 640, opacity: 1, duration: 0.8, ease: "power2.inOut", immediateRender: false }, l3.t + 0.4);
+          const cr = GP.croissant(cse, 300, { css: "left:560px;top:512px;" });
+          tl.fromTo(cr.el, { scale: 0, y: 30 }, { scale: 1, y: 0, duration: 0.4, ease: "back.out(2.6)", immediateRender: false }, l3.t + 0.55);
+          const c3 = $("#s1-cap3"); c3.innerHTML = GP.t("l03");
+          const w3 = GP.split(c3);
+          GP.wordsIn(tl, w3, l3.t);
+
+          // ---- line 4: EMPTY. ----
+          GP.wordsOut(tl, w3, l4.t - 0.18);
+          const em = $("#s1-empty"); em.textContent = GP.t("l04");
+          em.style.fontSize = Math.min(210, Math.floor(980 / (em.textContent.length * 0.74))) + "px";
+          tl.fromTo(em, { scale: 2.6, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.22, ease: "power4.in" }, l4.t);
+          GP.shake(tl, stage, l4.t + 0.22, { amp: 22, n: 6, dur: 0.32 });
+          GP.burst(tl, fxl, 540, 500, l4.t + 0.22, { n: 18, seed: 5, speed: 900, colors: [C.cream4, C.honey3, C.cream3], round: true, size: 18 });
+          tl.fromTo(cse, { scale: 1 }, { scale: 1.07, duration: 1.2, ease: "power2.out", transformOrigin: "70% 100%", immediateRender: false }, l4.t + 0.1);
+          // the lonely croissant looks around, sweats, sighs
+          tl.fromTo(cr.pupils, { x: 0 }, { x: -6, duration: 0.15, ease: "power2.out", immediateRender: false }, l4.t + 0.35);
+          tl.to(cr.pupils, { x: 6, duration: 0.2, ease: "power2.inOut" }, l4.t + 0.62);
+          tl.to(cr.pupils, { x: 0, y: 4, duration: 0.2, ease: "power2.inOut" }, l4.t + 0.95);
+          tl.fromTo(cr.smile, { opacity: 1 }, { opacity: 0, duration: 0.1, immediateRender: false }, l4.t + 0.3);
+          tl.fromTo(cr.frown, { opacity: 0 }, { opacity: 1, duration: 0.1, immediateRender: false }, l4.t + 0.3);
+          const sw = GP.mk("div", "", cse, "left:830px;top:520px;");
+          sw.id = "s1-sweat";
+          tl.fromTo(sw, { opacity: 0, y: -10 }, { opacity: 1, y: 30, duration: 0.5, ease: "power1.in", immediateRender: false }, l4.t + 0.5);
+          tl.to(sw, { opacity: 0, duration: 0.15 }, l4.t + 1.0);
+          tl.fromTo(cr.el, { scaleY: 1 }, { scaleY: 0.86, duration: 0.3, ease: "sine.inOut", yoyo: true, repeat: 1, transformOrigin: "50% 100%", immediateRender: false }, l4.t + 0.95);
+
+          // ---- exit: everything drains down ----
+          tl.to([em, cse, ck], { y: "+=260", opacity: 0, duration: 0.35, ease: "power3.in", stagger: 0.04 }, END - 0.38);
+          window.__timelines[ID] = tl;
+        })();
+      </script>
+    </template>
+  </body>
+</html>

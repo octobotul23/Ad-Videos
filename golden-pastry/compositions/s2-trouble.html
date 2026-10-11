@@ -1,0 +1,136 @@
+<!doctype html>
+<html>
+  <head><meta charset="UTF-8" /></head>
+  <body>
+    <template>
+      <style>
+        @font-face { font-family: "Fraunces"; src: url("fonts/fraunces-latin.woff2") format("woff2"); font-weight: 400 700; unicode-range: U+0000-00FF, U+2000-206F, U+20AC, U+2122; }
+        @font-face { font-family: "Fraunces"; src: url("fonts/fraunces-latin-ext.woff2") format("woff2"); font-weight: 400 700; unicode-range: U+0100-024F, U+0259, U+1E00-1EFF; }
+        @font-face { font-family: "Nunito Sans"; src: url("fonts/nunito-sans-latin.woff2") format("woff2"); font-weight: 400 800; unicode-range: U+0000-00FF, U+2000-206F, U+20AC, U+2122; }
+        @font-face { font-family: "Nunito Sans"; src: url("fonts/nunito-sans-latin-ext.woff2") format("woff2"); font-weight: 400 800; unicode-range: U+0100-024F, U+0259, U+1E00-1EFF; }
+        #root { position: absolute; inset: 0; overflow: hidden; font-family: "Nunito Sans", sans-serif; }
+        .s2-bg { position: absolute; inset: 0; background: radial-gradient(circle at 50% 45%, #FFFBF3 0%, #F8F0E2 55%, #EBDDC6 100%); }
+        .s2-stage { position: absolute; inset: 0; }
+        .s2-cap { position: absolute; left: 70px; right: 70px; top: 300px; text-align: center; font-weight: 800; font-size: 92px;
+          line-height: 1.06; letter-spacing: -0.02em; color: #2B1D13; }
+        .s2-cap .em { font-family: "Fraunces", serif; font-weight: 700; color: #C9561B; }
+        .s2-pill { position: absolute; padding: 18px 40px; border-radius: 60px; background: #D9433B; color: #FFFBF3; font-weight: 800;
+          font-size: 52px; letter-spacing: 0.04em; box-shadow: 0 12px 0 #7E2A0C; white-space: nowrap; }
+        #s2-world { position: absolute; inset: 0; }
+      </style>
+      <div id="root" data-composition-id="s2-trouble" data-width="1080" data-height="1920">
+        <div id="s2-bg" class="clip s2-bg" data-start="0" data-duration="20" data-track-index="0"></div>
+        <div id="s2-stage" class="clip s2-stage" data-start="0" data-duration="20" data-track-index="1">
+          <div id="s2-world"></div>
+          <div id="s2-cap1" class="s2-cap"></div>
+          <div id="s2-cap2" class="s2-cap"></div>
+          <div id="s2-cap3" class="s2-cap"></div>
+          <div id="s2-fx"></div>
+        </div>
+      </div>
+      <script>
+        (function () {
+          const ID = "s2-trouble", C = GP.C, $ = (s) => document.querySelector(s);
+          const l5 = GP.line(ID, "05"), l6 = GP.line(ID, "06"), l7 = GP.line(ID, "07");
+          const END = GP.sceneDur(ID);
+          const tl = gsap.timeline({ paused: true });
+          const world = $("#s2-world"), fxl = $("#s2-fx"), stage = $("#s2-stage");
+
+          function caption(sel, key, at) {
+            const c = $(sel); c.innerHTML = GP.t(key);
+            const w = GP.split(c);
+            const plain = w.filter((x) => !x.classList.contains("em")), em = w.filter((x) => x.classList.contains("em"));
+            GP.wordsIn(tl, plain, at);
+            // the emphasis words slam in like LiraPay's "chase."
+            tl.fromTo(em, { scale: 2.4, opacity: 0, y: -30 }, { scale: 1, opacity: 1, y: 0, duration: 0.2, ease: "power4.in", stagger: 0.07 }, at + 0.1 + plain.length * 0.085);
+            return { all: w, slamAt: at + 0.3 + plain.length * 0.085 };
+          }
+
+          // ---------- 05: the sick baker ----------
+          const baker = GP.mk("div", "", world, "position:absolute;left:340px;top:760px;width:400px;height:400px;");
+          const bb = GP.blob(baker, 400, "cream");
+          // chef hat
+          const hat = GP.mk("div", "", baker, "position:absolute;left:70px;top:-200px;width:260px;height:240px;");
+          [[0, 60, 130], [65, 0, 140], [135, 50, 125]].forEach((p) => GP.mk("div", "", hat, "position:absolute;left:" + p[0] + "px;top:" + p[1] + "px;width:" + p[2] + "px;height:" + p[2] + "px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,#F1E6D4);box-shadow:inset -6px -8px 14px rgba(0,0,0,.08);"));
+          GP.mk("div", "", hat, "position:absolute;left:30px;top:150px;width:200px;height:90px;border-radius:16px;background:linear-gradient(#ffffff,#E7D9C2);");
+          // thermometer + sick cheeks + droopy lids
+          const th = GP.svg("svg", { viewBox: "0 0 200 60", width: 220, height: 66 }, baker);
+          th.style.cssText = "position:absolute;left:210px;top:255px;overflow:visible;transform-origin:10px 30px";
+          GP.svg("rect", { x: 0, y: 18, width: 180, height: 24, rx: 12, fill: "#FFFBF3", stroke: "#4A3627", "stroke-width": 5 }, th);
+          GP.svg("rect", { x: 6, y: 24, width: 110, height: 12, rx: 6, fill: "#D9433B" }, th);
+          GP.svg("circle", { cx: 186, cy: 30, r: 20, fill: "#D9433B", stroke: "#4A3627", "stroke-width": 5 }, th);
+          const lids = GP.mk("div", "", baker, "position:absolute;left:120px;top:136px;width:160px;height:40px;");
+          GP.mk("div", "", lids, "position:absolute;left:12px;top:0;width:54px;height:30px;border-radius:30px 30px 0 0;background:#E7D9C2;");
+          GP.mk("div", "", lids, "position:absolute;left:96px;top:0;width:54px;height:30px;border-radius:30px 30px 0 0;background:#E7D9C2;");
+          GP.mk("div", "", baker, "position:absolute;left:70px;top:230px;width:70px;height:40px;border-radius:50%;background:rgba(217,67,59,.45);");
+          GP.mk("div", "", baker, "position:absolute;left:262px;top:230px;width:70px;height:40px;border-radius:50%;background:rgba(217,67,59,.45);");
+          // phone bubble
+          const phone = GP.mk("div", "", world, "position:absolute;left:740px;top:640px;width:170px;height:170px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff7e0,#F2A63B 55%,#C4741A);box-shadow:0 16px 30px rgba(74,54,39,.3);");
+          const ps = GP.svg("svg", { viewBox: "0 0 100 100", width: 170, height: 170 }, phone);
+          GP.svg("path", { d: "M33 25 C29 25 26 28 27 33 C30 52 45 68 66 73 C71 74 75 71 75 67 L75 60 C75 57 72 55 69 56 L61 58 C58 59 56 58 54 56 L44 46 C42 44 41 41 42 39 L44 31 C45 28 43 25 40 25 Z", fill: "#FFFBF3" }, ps);
+          const pill = GP.mk("div", "s2-pill", world, "left:300px;top:1250px;", GP.t("sick"));
+          tl.fromTo(baker, { y: 1200, scaleX: 0.7, scaleY: 1.3 }, { y: 0, scaleX: 1, scaleY: 1, duration: 0.55, ease: "back.out(1.5)" }, 0.0);
+          tl.fromTo(phone, { scale: 0 }, { scale: 1, duration: 0.35, ease: "back.out(3)" }, l5.t - 0.1);
+          tl.fromTo(phone, { rotation: -14 }, { rotation: 14, duration: 0.07, yoyo: true, repeat: 9, ease: "none", immediateRender: false }, l5.t + 0.25);
+          tl.fromTo(th, { rotation: -6 }, { rotation: 8, duration: 0.25, yoyo: true, repeat: 5, ease: "sine.inOut", immediateRender: false }, l5.t);
+          tl.fromTo(baker, { rotation: -5 }, { rotation: 5, duration: 0.45, yoyo: true, repeat: 3, ease: "sine.inOut", transformOrigin: "50% 100%", immediateRender: false }, l5.t + 0.2);
+          const cap1 = caption("#s2-cap1", "l05", l5.t);
+          tl.fromTo(pill, { scale: 2.2, opacity: 0, rotation: -12 }, { scale: 1, opacity: 1, rotation: -6, duration: 0.2, ease: "power4.in" }, cap1.slamAt);
+          GP.shake(tl, world, cap1.slamAt + 0.2, { amp: 16, n: 5, dur: 0.25, seed: 2 });
+
+          // ---------- 06: the dough didn't rise ----------
+          GP.wordsOut(tl, cap1.all, l6.t - 0.2);
+          tl.to([baker, phone, pill], { x: -1100, rotation: -20, duration: 0.42, ease: "power3.in", stagger: 0.03 }, l6.t - 0.3);
+          tl.to([baker, phone, pill], { opacity: 0, duration: 0.05 }, l6.t + 0.2);
+          const bowlW = GP.mk("div", "", world, "position:absolute;left:190px;top:820px;width:700px;height:620px;");
+          const dough = GP.blob(bowlW, 420, "cream");
+          dough.el.style.left = "140px"; dough.el.style.top = "-20px";
+          GP.mk("div", "", bowlW, "position:absolute;left:0;top:330px;width:700px;height:290px;border-radius:30px 30px 350px 350px;background:linear-gradient(160deg,#E9814E,#9A3610);box-shadow:0 26px 50px rgba(43,29,19,.35), inset 0 18px 0 rgba(255,255,255,.18);");
+          GP.mk("div", "", bowlW, "position:absolute;left:-20px;top:310px;width:740px;height:50px;border-radius:25px;background:#C9561B;box-shadow:inset 0 -8px 0 rgba(0,0,0,.15);");
+          tl.fromTo(bowlW, { x: 1100 }, { x: 0, duration: 0.45, ease: "power3.out" }, l6.t - 0.2);
+          // inflate ... then deflate flat
+          tl.fromTo(dough.el, { scaleX: 1, scaleY: 1 }, { scaleX: 1.08, scaleY: 1.35, duration: 0.7, ease: "sine.out", transformOrigin: "50% 100%" }, l6.t + 0.25);
+          tl.to(dough.el, { scaleX: 1.3, scaleY: 0.52, duration: 0.45, ease: "elastic.out(1,0.45)", transformOrigin: "50% 100%" }, l6.t + 1.0);
+          tl.to(dough.mouth, { attr: { d: "M40 70 Q50 60 60 70" }, duration: 0.2 }, l6.t + 1.0);
+          tl.to(dough.eyes, { scaleY: 0.4, duration: 0.15, transformOrigin: "50% 50%" }, l6.t + 1.05);
+          const cap2 = caption("#s2-cap2", "l06", l6.t);
+          GP.burst(tl, fxl, 540, 1000, l6.t + 1.0, { n: 14, seed: 6, speed: 700, colors: [C.cream, C.cream3, C.cream4], round: true, size: 22, gravity: 1600 });
+
+          // ---------- 07: the queue is already outside ----------
+          GP.wordsOut(tl, cap2.all, l7.t - 0.2);
+          tl.to(bowlW, { x: -1100, rotation: -12, duration: 0.42, ease: "power3.in" }, l7.t - 0.3);
+          tl.to(bowlW, { opacity: 0, duration: 0.05 }, l7.t + 0.2);
+          // the shop door behind the queue, still OPEN
+          const sd = GP.mk("div", "", world, "position:absolute;left:640px;top:600px;width:330px;height:560px;");
+          GP.mk("div", "", sd, "position:absolute;inset:0;border-radius:165px 165px 14px 14px;background:#4A3627;");
+          GP.mk("div", "", sd, "position:absolute;left:22px;right:22px;top:22px;bottom:0;border-radius:143px 143px 8px 8px;background:linear-gradient(160deg,#E9814E,#B34A16 70%);");
+          GP.mk("div", "", sd, "position:absolute;left:60px;right:60px;top:150px;height:96px;border-radius:16px;background:#FFFBF3;border:6px solid #2B1D13;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:44px;color:#3E9B5B;letter-spacing:.04em;", GP.t("open"));
+          tl.fromTo(sd, { y: 1400 }, { y: 0, duration: 0.5, ease: "back.out(1.2)" }, l7.t - 0.25);
+          const tones = ["honey", "crust", "cream", "cocoa", "honey", "crust", "cream"];
+          const qs = [];
+          tones.forEach((tn, i) => {
+            const w = GP.mk("div", "", world, "position:absolute;left:" + (40 + i * 150) + "px;top:" + (1060 + (i % 2) * 70) + "px;width:190px;height:190px;");
+            const b = GP.blob(w, 190, tn);
+            qs.push(w);
+            tl.fromTo(w, { x: 1200 + i * 60 }, { x: 0, duration: 0.5, ease: "back.out(1.2)" }, l7.t - 0.15 + i * 0.09);
+            tl.fromTo(w, { y: 0 }, { y: -26, duration: 0.14, yoyo: true, repeat: 5, ease: "power1.out", immediateRender: false }, l7.t + 0.55 + (i % 3) * 0.07);
+          });
+          // impatient "!" bubbles
+          [[150, 920], [520, 980], [860, 930]].forEach((p, i) => {
+            const bub = GP.mk("div", "", world, "position:absolute;left:" + p[0] + "px;top:" + p[1] + "px;width:96px;height:96px;border-radius:50%;background:#FFFBF3;border:6px solid #2B1D13;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:60px;color:#D9433B;", "!");
+            tl.fromTo(bub, { scale: 0, rotation: -30 }, { scale: 1, rotation: 0, duration: 0.25, ease: "back.out(3)" }, l7.t + 0.75 + i * 0.12);
+          });
+          const cap3 = caption("#s2-cap3", "l07", l7.t);
+          GP.shake(tl, stage, cap3.slamAt + 0.15, { amp: 14, n: 5, dur: 0.25, seed: 4 });
+
+          // ---------- exit: spiral everything into a glowing point ----------
+          const glow = GP.mk("div", "", fxl, "position:absolute;left:490px;top:910px;width:100px;height:100px;border-radius:50%;background:radial-gradient(circle,#fff 0%,#F7C46B 40%,rgba(242,166,59,0) 70%);opacity:0;");
+          tl.to(world, { scale: 0.05, rotation: 200, duration: 0.55, ease: "power3.in", transformOrigin: "50% 50%" }, END - 0.62);
+          GP.wordsOut(tl, cap3.all, END - 0.62, { stagger: 0.02 });
+          tl.fromTo(glow, { scale: 0, opacity: 0 }, { scale: 3, opacity: 1, duration: 0.35, ease: "power2.out" }, END - 0.35);
+          window.__timelines[ID] = tl;
+        })();
+      </script>
+    </template>
+  </body>
+</html>
