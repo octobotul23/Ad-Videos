@@ -495,3 +495,73 @@
     return { el: el, svg: s, face: f };
   };
 })();
+
+// The Golden Pastry logo as the brand draws it: the flower mark (logo-auriu.png used as a mask,
+// filled with the gold gradient, so it stays crisp at any size) over the gold wordmark.
+(function () {
+  const GP = window.GP;
+  const GOLD = "linear-gradient(135deg,#F7DFA0 0%,#E6BC6C 30%,#C9973F 58%,#F2CF84 80%,#D7A653 100%)";
+  GP.logo = function (parent, o) {
+    o = o || {};
+    const m = o.mark || 440, ww = o.word || 760, gap = o.gap || 34;
+    const wrap = GP.mk("div", "gp-logo", parent, "position:absolute;left:0;right:0;top:" + (o.top || 0) + "px;height:" + (m + gap + ww * 0.246) + "px;");
+    const glow = GP.mk("div", "", wrap, "position:absolute;left:50%;top:" + m / 2 + "px;width:" + m * 1.9 + "px;height:" + m * 1.9 + "px;margin:-" + m * 0.95 + "px 0 0 -" + m * 0.95 + "px;border-radius:50%;background:radial-gradient(circle,rgba(247,196,107,.55) 0%,rgba(242,166,59,.18) 40%,rgba(242,166,59,0) 68%);");
+    const mark = GP.mk("div", "", wrap, "position:absolute;left:50%;top:0;width:" + m + "px;height:" + m + "px;margin-left:-" + m / 2 + "px;");
+    const fill = "position:absolute;inset:0;-webkit-mask:url(assets/brand/logo-auriu.png) center/contain no-repeat;mask:url(assets/brand/logo-auriu.png) center/contain no-repeat;";
+    GP.mk("div", "", mark, fill + "background:" + GOLD + ";");
+    const shine = GP.mk("div", "", mark, fill + "background:linear-gradient(110deg,rgba(255,255,255,0) 42%,rgba(255,250,235,.95) 50%,rgba(255,255,255,0) 58%) 0 0/300% 100% no-repeat;background-position:100% 0;");
+    const word = GP.mk("div", "", wrap, "position:absolute;left:50%;top:" + (m + gap) + "px;width:" + ww + "px;height:" + ww * 0.246 + "px;margin-left:-" + ww / 2 + "px;background:url(assets/brand/wordmark-gold.png) center/contain no-repeat;");
+    const wshine = GP.mk("div", "", word, "position:absolute;inset:0;-webkit-mask:url(assets/brand/wordmark-gold.png) center/contain no-repeat;mask:url(assets/brand/wordmark-gold.png) center/contain no-repeat;background:linear-gradient(110deg,rgba(255,255,255,0) 42%,rgba(255,250,235,.9) 50%,rgba(255,255,255,0) 58%) 0 0/300% 100% no-repeat;background-position:100% 0;");
+    return { wrap: wrap, glow: glow, mark: mark, shine: shine, word: word, wshine: wshine, m: m };
+  };
+  // Entrance: glow opens, the mark rises and turns into place, a light sweep crosses the gold, the name wipes in.
+  GP.logoIn = function (tl, L, at) {
+    tl.fromTo(L.glow, { scale: 0.2, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.7, ease: "power2.out" }, at);
+    tl.fromTo(L.mark, { scale: 0.35, rotation: -45, opacity: 0, filter: "blur(14px)" }, { scale: 1, rotation: 0, opacity: 1, filter: "blur(0px)", duration: 0.75, ease: "back.out(1.6)" }, at);
+    tl.fromTo(L.shine, { backgroundPosition: "100% 0" }, { backgroundPosition: "-50% 0", duration: 0.8, ease: "power2.inOut" }, at + 0.55);
+    tl.fromTo(L.word, { clipPath: "inset(0 100% 0 0)", y: 24, opacity: 0 }, { clipPath: "inset(0 0% 0 0)", y: 0, opacity: 1, duration: 0.6, ease: "power3.out" }, at + 0.4);
+    tl.fromTo(L.wshine, { backgroundPosition: "100% 0" }, { backgroundPosition: "-50% 0", duration: 0.8, ease: "power2.inOut" }, at + 0.95);
+    return at + 1.0;
+  };
+
+  // A cartoon campfire flame: three tips, ink outline, warm layers, the kawaii face; flickers by changing shape.
+  function flamePath(v) {
+    // v: [leftTipX, leftTipY, midTipX, midTipY, rightTipX, rightTipY, bulge]
+    const b = v[6];
+    return "M0 0 C" + (-80 - b) + " 0 " + (-122 - b) + " -50 -110 -122 C-102 -172 " + (v[0] - 4) + " -188 " + v[0] + " " + v[1] +
+      " C" + (v[0] + 24) + " " + (v[1] + 30) + " -42 -182 -30 -170 C-32 -240 " + (v[2] - 12) + " " + (v[3] + 54) + " " + v[2] + " " + v[3] +
+      " C" + (v[2] + 22) + " " + (v[3] + 60) + " 62 -252 50 -190 C64 -206 " + (v[4] - 6) + " " + (v[5] + 26) + " " + v[4] + " " + v[5] +
+      " C" + (v[4] + 30) + " " + (v[5] + 50) + " " + (124 + b) + " -150 112 -100 C" + (100 + b) + " -40 70 0 0 0 Z";
+  }
+  const SHAPES = [[-66, -240, 10, -340, 80, -250, 0], [-80, -226, -8, -352, 92, -234, 8], [-58, -254, 18, -328, 72, -262, -6]];
+  GP.campfire = function (parent, size, o) {
+    o = o || {};
+    const el = GP.mk("div", "gp-fire", parent, "position:absolute;width:" + size + "px;height:" + size * 1.35 + "px;" + (o.css || ""));
+    const s = GP.svg("svg", { viewBox: "-170 -380 340 460", width: "100%", height: "100%" }, el);
+    s.style.overflow = "visible";
+    const ink = GP.INK;
+    // logs
+    [[-14, "#9A5B30"], [14, "#B06A38"]].forEach(function (lg) {
+      const g = GP.svg("g", { transform: "rotate(" + lg[0] + " 0 40)" }, s);
+      GP.svg("rect", { x: -150, y: 20, width: 300, height: 46, rx: 23, fill: lg[1], stroke: ink, "stroke-width": 8 }, g);
+      GP.svg("circle", { cx: lg[0] < 0 ? -128 : 128, cy: 43, r: 15, fill: "#E7C9A0", stroke: ink, "stroke-width": 6 }, g);
+    });
+    const layers = [["#E9572B", 1, 0], ["#F7A23B", 0.72, 0], ["#FFE08A", 0.46, 0]];
+    const paths = layers.map(function (ly, i) {
+      const g = GP.svg("g", { transform: "translate(0 22) scale(" + ly[1] + ")" }, s);
+      return GP.svg("path", { d: flamePath(SHAPES[0]), fill: ly[0], stroke: i === 0 ? ink : "none", "stroke-width": 10, "stroke-linejoin": "round" }, g);
+    });
+    const face = GP.face(s, 0, -48, 0.27, { mood: o.mood || "happy" });
+    return { el: el, svg: s, paths: paths, face: face };
+  };
+  // Flicker: each layer cycles through the three shapes at its own pace (finite, seek-safe attr tweens).
+  GP.flicker = function (tl, fire, at, dur) {
+    const per = [0.2, 0.16, 0.13];
+    fire.paths.forEach(function (p, i) {
+      const step = per[i], n = Math.max(1, Math.floor(dur / step));
+      for (let k = 0; k < n; k++) {
+        tl.to(p, { attr: { d: flamePath(SHAPES[(k + 1 + i) % 3]) }, duration: step, ease: "sine.inOut" }, at + k * step);
+      }
+    });
+  };
+})();

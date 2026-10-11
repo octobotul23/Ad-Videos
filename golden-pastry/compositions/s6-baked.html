@@ -76,24 +76,16 @@
           tl.fromTo(tg.knob, { x: 0 }, { x: 428, duration: 0.3, ease: "back.out(1.8)" }, tB - 0.12);
           tl.to(tg.iceK, { opacity: 0, duration: 0.15 }, tB - 0.05);
           tl.fromTo(tg.hotK, { opacity: 0 }, { opacity: 1, duration: 0.2 }, tB - 0.05);
-          tl.to(tg.el, { y: 420, opacity: 0, duration: 0.3, ease: "power2.in" }, tB + 0.22);
+          tl.to(tg.el, { y: 420, opacity: 0, duration: 0.25, ease: "power2.in" }, tB + 0.1);
           tl.fromTo("#s6-warm", { opacity: 0 }, { opacity: 1, duration: 0.55, ease: "power2.out" }, tB + 0.05);
           tl.fromTo("#s6-heat", { opacity: 0 }, { opacity: 1, duration: 0.6, ease: "power2.out" }, tB + 0.1);
 
-          // the flame: three layered tongues that flicker (finite yoyo)
-          const fl = GP.svg("svg", { viewBox: "-150 -360 300 380", width: 300, height: 380 }, world);
-          fl.style.cssText = "position:absolute;left:390px;top:1280px;overflow:visible;transform-origin:150px 360px;";
-          const tongues = [["M0 -340 C70 -240 140 -170 120 -80 C105 -20 60 10 0 10 C-60 10 -105 -20 -120 -80 C-140 -170 -70 -240 0 -340 Z", "#C9561B"],
-            ["M0 -260 C50 -190 100 -140 86 -70 C76 -26 44 0 0 0 C-44 0 -76 -26 -86 -70 C-100 -140 -50 -190 0 -260 Z", "#F2A63B"],
-            ["M0 -170 C30 -130 60 -96 52 -52 C46 -20 26 -4 0 -4 C-26 -4 -46 -20 -52 -52 C-60 -96 -30 -130 0 -170 Z", "#FFE39A"]];
-          const tps = tongues.map((t, i) => GP.svg("path", { d: t[0], fill: t[1], stroke: i === 0 ? GP.INK : "none", "stroke-width": 8, "stroke-linejoin": "round" }, fl));
-          // a friendly little flame with the croissant's face
-          GP.face(fl, 0, -78, 0.24, { mood: "happy" });
+          // the flame: a cartoon campfire on two logs, flickering by changing shape
+          const fire = GP.campfire(world, 300, { css: "left:390px;top:1240px;" });
+          const fl = fire.el;
+          fl.style.transformOrigin = "50% 92%";
           tl.fromTo(fl, { scale: 0, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.4, ease: "back.out(2.4)" }, tB + 0.38);
-          const flick = Math.max(0, Math.floor((END - tB - 0.5) / 0.16) - 1);
-          tl.fromTo(tps[0], { scaleY: 1, skewX: -4 }, { scaleY: 1.12, skewX: 5, transformOrigin: "50% 100%", duration: 0.16, ease: "sine.inOut", yoyo: true, repeat: flick, immediateRender: false }, tB + 0.4);
-          tl.fromTo(tps[1], { scaleY: 1.06, skewX: 4 }, { scaleY: 0.94, skewX: -5, transformOrigin: "50% 100%", duration: 0.13, ease: "sine.inOut", yoyo: true, repeat: flick + 2, immediateRender: false }, tB + 0.42);
-          tl.fromTo(tps[2], { scaleY: 0.95 }, { scaleY: 1.12, transformOrigin: "50% 100%", duration: 0.11, ease: "sine.inOut", yoyo: true, repeat: flick + 4, immediateRender: false }, tB + 0.44);
+          GP.flicker(tl, fire, tB + 0.5, END - tB - 0.6);
           // rising embers
           GP.burst(tl, fxl, 540, 1440, tB + 0.3, { n: 26, seed: 71, speed: 760, spread: 1.1, colors: ["#FFE39A", "#F2A63B", "#E9814E"], round: true, size: 14, gravity: -260, dur: 2.2 });
           // golden croissant pops up above the flame, steam curls off it

@@ -14,8 +14,7 @@
         #s10-rays { position: absolute; left: -460px; top: -560px; width: 2000px; height: 2000px; border-radius: 50%;
           background: repeating-conic-gradient(from 0deg, rgba(242,166,59,.12) 0deg 7deg, rgba(242,166,59,0) 7deg 22.5deg);
           -webkit-mask-image: radial-gradient(circle, #000 0%, rgba(0,0,0,.6) 35%, transparent 62%); mask-image: radial-gradient(circle, #000 0%, rgba(0,0,0,.6) 35%, transparent 62%); }
-        #s10-mark { position: absolute; left: 360px; top: 200px; width: 360px; height: 360px; overflow: visible; }
-        #s10-word { position: absolute; left: 230px; top: 600px; width: 620px; height: 153px; background: url(assets/brand/wordmark-gold.png) center/contain no-repeat; }
+        #s10-logo { position: absolute; left: 0; right: 0; top: 180px; height: 760px; }
         #s10-tag { position: absolute; left: 60px; right: 60px; top: 820px; text-align: center; font-family: "Fraunces", serif; font-weight: 600; font-size: 66px; line-height: 1.12; color: #FBE7CE; }
         #s10-tag .em { color: #F2A63B; font-weight: 700; }
         #s10-line { position: absolute; left: 340px; top: 935px; width: 400px; height: 8px; border-radius: 4px; background: #F2A63B; transform-origin: 0 50%; }
@@ -34,8 +33,7 @@
         <div id="s10-bg" class="clip s10-bg" data-start="0" data-duration="20" data-track-index="0"></div>
         <div id="s10-stage" class="clip s10-stage" data-start="0" data-duration="20" data-track-index="1">
           <div id="s10-rays"></div>
-          <svg id="s10-mark" viewBox="-300 -300 600 600"></svg>
-          <div id="s10-word"></div>
+          <div id="s10-logo"></div>
           <div id="s10-tag"></div>
           <div id="s10-line"></div>
           <div id="s10-card"></div>
@@ -55,39 +53,12 @@
           const fxl = $("#s10-fx");
           tl.fromTo("#s10-rays", { rotation: 0, opacity: 0 }, { rotation: 50, opacity: 1, duration: END, ease: "none" }, 0);
 
-          // ---- 25: the flower blooms again, the wordmark wipes in ----
-          const mark = $("#s10-mark");
-          const defs = GP.svg("defs", {}, mark);
-          const g = GP.svg("linearGradient", { id: "s10gold", x1: "0", y1: "0", x2: "1", y2: "1" }, defs);
-          [["0", "#F7DFA0"], [".45", "#E0B060"], [".75", "#C48E3E"], ["1", "#F2C877"]].forEach((s) => GP.svg("stop", { offset: s[0], "stop-color": s[1] }, g));
-          const rays = [], petals = [], dots = [];
-          for (let i = 0; i < 8; i++) rays.push(GP.svg("line", { x1: 0, y1: -175, x2: 0, y2: -262, stroke: "url(#s10gold)", "stroke-width": 5, "stroke-linecap": "round", transform: "rotate(" + (i * 45 + 22.5) + ")" }, mark));
-          for (let i = 0; i < 8; i++) {
-            const pg = GP.svg("g", { transform: "rotate(" + i * 45 + ")" }, mark);
-            const p = GP.svg("path", { d: "M0 -26 C34 -78 34 -170 0 -232 C-34 -170 -34 -78 0 -26 Z", fill: "url(#s10gold)" }, pg);
-            petals.push(p);
-          }
-          const core = GP.svg("circle", { cx: 0, cy: 0, r: 17, fill: "url(#s10gold)" }, mark);
-          [[0, -285], [285, 0], [0, 285], [-285, 0]].forEach((p) => dots.push(GP.svg("circle", { cx: p[0], cy: p[1], r: 13, fill: "url(#s10gold)" }, mark)));
+          // ---- 25: the real logo arrives again ----
+          const L = GP.logo($("#s10-logo"), { mark: 380, word: 650, gap: 30 });
           const at = Math.max(0.15, l25.t - 0.25);
-          // each petal grows out of its base (0,-26) — written as a transform attribute, seek-safe
-          const bloom = { t: 0 }, eb = gsap.parseEase("back.out(2.2)");
-          petals.forEach((pt) => { pt.setAttribute("transform", "translate(0 -26) scale(0.001) translate(0 26)"); pt.setAttribute("opacity", "0"); });
-          tl.to(bloom, { t: 1, duration: 0.4 + 7 * 0.05, ease: "none", onUpdate: function () {
-            const T = bloom.t * (0.4 + 7 * 0.05);
-            petals.forEach((pt, i) => {
-              const k = Math.max(0, Math.min(1, (T - i * 0.05) / 0.4)), sc = Math.max(0.001, eb(k));
-              pt.setAttribute("transform", "translate(0 -26) scale(" + sc + ") translate(0 26)");
-              pt.setAttribute("opacity", k > 0 ? "1" : "0");
-            });
-          } }, at);
-          tl.fromTo(core, { scale: 0 }, { scale: 1, duration: 0.3, ease: "back.out(3)", transformOrigin: "50% 50%" }, at + 0.1);
-          tl.fromTo(rays, { attr: { y2: -175 } }, { attr: { y2: -262 }, duration: 0.35, ease: "power2.out", stagger: 0.03 }, at + 0.3);
-          tl.fromTo(dots, { scale: 0 }, { scale: 1, duration: 0.25, ease: "back.out(3)", stagger: 0.05, transformOrigin: "50% 50%" }, at + 0.42);
-          tl.fromTo(mark, { rotation: -60 }, { rotation: 0, duration: 0.9, ease: "power3.out" }, at);
-          tl.fromTo("#s10-word", { clipPath: "inset(0 50% 0 50%)", opacity: 0 }, { clipPath: "inset(0 0% 0 0%)", opacity: 1, duration: 0.5, ease: "power3.out" }, l25.t);
-          GP.ring(tl, fxl, 540, 380, at + 0.05, { size: 340, color: "#F2C877", width: 9, scale: 2.0 });
-          GP.sparkles(tl, fxl, 540, 380, at + 0.35, { n: 8, radius: 250, size: 52, color: "#F7DFA0", seed: 14 });
+          GP.logoIn(tl, L, at);
+          GP.ring(tl, fxl, 540, 370, at + 0.15, { size: 400, color: "#F2C877", width: 9, scale: 1.9 });
+          GP.sparkles(tl, fxl, 540, 370, at + 0.5, { n: 8, radius: 280, size: 52, color: "#F7DFA0", seed: 14 });
 
           // ---- 26: from our lab to your shelves ----
           const tag = $("#s10-tag"); tag.innerHTML = GP.t("l26");
